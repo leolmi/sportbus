@@ -1,0 +1,29 @@
+<div class="sportbus-page sportbus-page-access page-fill" fxLayout="row">
+  <div class="page-space" fxFlex></div>
+  <div class="page-content" fxLayout="column">
+    <div class="help-title">Type access code or create new session</div>
+    <div class="access-code">
+      <input autofocus
+             #codeInput
+             [specialCharacters]="['-']"
+             mask="AAA-AAA-AAA"
+             class="code-input full-width font-family-monospace font-size-big text-align-center"
+             (input)="keepText($event)">
+    </div>
+    <div class="access-actions" fxLayout="row" fxLayoutAlign="space-around center">
+      <button mat-flat-button
+              class="access-button"
+              [disabled]="isInvalidCode$|async"
+              (click)="login()">
+        login
+      </button>
+      <button mat-flat-button
+              class="access-button"
+              (click)="create()">
+        create
+      </button>
+    </div>
+
+  </div>
+  <div class="page-space" fxFlex></div>
+</div>

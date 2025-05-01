@@ -1,0 +1,12 @@
+<div class="footer-toolbar line-top"
+     fxLayout="row" fxLayoutAlign="start center">
+  @for (page of PAGES; track $index) {
+    <button mat-icon-button
+            fxFlex
+            class="toolbar-button"
+            [class.active]="(manager.page$|async)?.code === page.code"
+            (click)="manager.setPage(page)">
+      <mat-icon>{{page.icon}}</mat-icon>
+    </button>
+  }
+</div>

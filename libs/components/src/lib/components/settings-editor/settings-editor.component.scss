@@ -1,0 +1,45 @@
+::ng-deep {
+  .page-editor {
+    &.settings {
+      .mat-expansion-panel-header-description {
+        justify-content: space-between;
+        align-items: center;
+      }
+    }
+  }
+}
+
+.spb-basic-input {
+  margin-right: 10px;
+  &.type {
+    min-width: 84px;
+  }
+  &.group {
+    min-width: 120px;
+  }
+}
+
+.panel-header {
+  .header-group {
+    width: 114px;
+  }
+  .header-type {
+    width: 80px;
+  }
+  .header-icon {
+    width: 32px;
+  }
+  .header-day {
+    width: 24px;
+  }
+  .header-group-name {
+    text-align: center;
+  }
+}
+
+
+.panel-item {
+  .field-day {
+    width: 24px;
+  }
+}

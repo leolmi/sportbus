@@ -1,0 +1,147 @@
+<div class="page-editor settings">
+  @if (manager.session$|async; as ses) {
+    <mat-form-field
+      appearance="outline"
+      class="full-width margin-bottom-20"
+    >
+      <mat-label>Name</mat-label>
+      <input matInput
+             [value]="ses.name||''"
+             (change)="manager.updateValue($event,'name','target.value')"
+             placeholder="session name">
+      <button
+        mat-icon-button
+        matSuffix
+        (click)="share()"
+        [attr.aria-label]="'Share session'"
+      >
+        <mat-icon>share</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        matSuffix
+        (click)="manager.close()"
+        [attr.aria-label]="'Close this session'"
+      >
+        <mat-icon>logout</mat-icon>
+      </button>
+    </mat-form-field>
+    <mat-accordion multi>
+      <!-- GROUPS -->
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> Groups </mat-panel-title>
+          <mat-panel-description>
+            Groups of athletes
+            <div class="row-tail" fxLayout="row" fxLayoutAlign="start center">
+              <div class="spb-basic-badge">{{groupsCount$|async}}</div>
+              <mat-icon>groups</mat-icon>
+            </div>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <div class="panel-toolbar" fxLayout="row" fxLayoutAlign="end center">
+          <button mat-icon-button (click)="addGroup()">
+            <mat-icon>add</mat-icon>
+          </button>
+        </div>
+        @for (grp of ses.groups; track $index) {
+          <div class="panel-item" fxLayout="row" fxLayoutAlign="start center">
+            <input type="text"
+                   class="spb-basic-input"
+                   [value]="grp.name"
+                   (change)="updateGroup($event, grp)" fxFlex>
+            <button mat-icon-button (click)="deleteGroup(grp)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        }
+      </mat-expansion-panel>
+
+      <!-- PERSONS -->
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> Persons </mat-panel-title>
+          <mat-panel-description>
+            Athletes & Drivers
+            <div class="row-tail" fxLayout="row" fxLayoutAlign="start center">
+              <div class="spb-basic-badge">{{personsCount$|async}}</div>
+              <mat-icon>person</mat-icon>
+            </div>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <div class="panel-toolbar" fxLayout="row" fxLayoutAlign="end center">
+          <button mat-icon-button (click)="addPerson()">
+            <mat-icon>add</mat-icon>
+          </button>
+        </div>
+        <div class="panel-header" fxLayout="row" fxLayoutAlign="end center">
+          <div fxFlex></div>
+          <div class="header-group">Group</div>
+          <div class="header-type">Type</div>
+          <div class="header-icon"></div>
+        </div>
+        @for (prs of (ses.persons||[]); track $index) {
+          <div class="panel-item" fxLayout="row" fxLayoutAlign="start center">
+            <input type="text"
+                   class="spb-basic-input"
+                   [value]="prs.name"
+                   (change)="updatePerson($event, prs, 'name')" fxFlex>
+            @if (prs.type==='athlete') {
+              <select class="spb-basic-input group"
+                      [ngModel]="prs.group"
+                      (change)="updatePerson($event, prs, 'group')">
+                @for (grp of (ses.groups||[]); track $index) {
+                  <option [ngValue]="grp.code">{{grp.name}}</option>
+                }
+              </select>
+            }
+            <select class="spb-basic-input type"
+                    [ngModel]="prs.type"
+                    (change)="updatePerson($event, prs, 'type')">
+              <option [ngValue]="'athlete'">Athlete</option>
+              <option [ngValue]="'driver'">Driver</option>
+            </select>
+            <button mat-icon-button (click)="deletePerson(prs)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        }
+      </mat-expansion-panel>
+
+      <!-- CALENDAR -->
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title> Calendar </mat-panel-title>
+          <mat-panel-description>
+            Calendar of activities
+            <div class="row-tail" fxLayout="row" fxLayoutAlign="start center">
+              <div class="spb-basic-badge">{{calendarCount$|async}}</div>
+              <mat-icon>event_note</mat-icon>
+            </div>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <div class="panel-header" fxLayout="row" fxLayoutAlign="end center">
+          <div class="header-day"></div>
+          @for (grp of ses.groups; track $index) {
+            <div class="header-group-name" fxFlex>{{grp.name}}</div>
+          }
+        </div>
+        @for (day of weekDays; track $index) {
+          <div class="panel-item" fxLayout="row" fxLayoutAlign="start center">
+            <div class="field-day">{{day.small}}</div>
+            @for (grp of ses.groups; track $index) {
+              <input type="text"
+                     class="spb-basic-input"
+                     fxFlex
+                     [value]="(((calendarMap$|async)||{})[day.num]||{})[grp.code]||''"
+                     (change)="updateCalendarItem($event, day.num , grp.code)" fxFlex>
+            }
+          </div>
+        }
+      </mat-expansion-panel>
+    </mat-accordion>
+  }
+</div>

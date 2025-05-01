@@ -1,0 +1,26 @@
+body {
+  --spb-color-background: white;
+  --spb-color-foreground: #111;
+  --spb-color-off :#ddd;
+  --spb-color-off-light :#eee;
+  --spb-color-accent: rgb(255, 64, 129);
+  --spb-color-accent-contrast: white;
+  --spb-color-accent-contrast-40: rgba(255, 255, 255, 0.4);
+  --spb-color-secondary: rgb(82 78 91);
+  --spb-color-secondary-contrast: white;
+  --spb-color-border: rgba(17, 17, 17, 0.1);
+  --spb-color-ghost: rgba(1, 1, 1, 0.05);
+  --spb-color-hover: rgba(1,1,1,.1);
+
+  --spb-color-success: green;
+  --spb-color-success-contrast: white;
+  --spb-color-warning: orange;
+  --spb-color-warning-contrast: #111;
+  --spb-color-error: red;
+  --spb-color-error-contrast: white;
+
+  --spb-disabled-opacity: 0.4;
+
+  --spb-schemas-toolbar-height: 76px;
+  --spb-menu-separator-size: 10px;
+}

@@ -1,0 +1,97 @@
+
+.empty-container,
+.empty-content {
+  text-align: center;
+  opacity: .4;
+  margin-top: 20vh;
+}
+
+.click-content {
+  cursor: pointer;
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.persons-list {
+  //border: var(--spb-color-border) 1px dashed;
+  //padding: 20px;
+  box-sizing: border-box;
+
+  .person-selector {
+    border: var(--spb-color-border) 1px dashed;
+    border-radius: 10px;
+    width: fit-content;
+    display: inline-block !important;
+    margin: 10px;
+    padding: 10px;
+    cursor: pointer;
+    position: relative;
+
+    &.present {
+      background-color: var(--spb-color-success);
+      color: var(--spb-color-success-contrast);
+    }
+    &.absent {
+      background-color: var(--spb-color-error);
+      color: var(--spb-color-error-contrast);
+    }
+    &.unknown {
+      background-color: var(--spb-color-ghost);
+    }
+
+    .text {
+      float: left;
+      margin-top: 3px;
+      margin-right: 10px;
+      user-select: none;
+    }
+    .athlete-group {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      font-size: 9px;
+      padding-bottom: 4px;
+      opacity: .8;
+    }
+  }
+}
+
+.calendar {
+  padding: 10px;
+}
+
+.calendar-item {
+  user-select: none;
+
+  .item-group {}
+  .item-target {}
+  .item-time {
+    width: 50px;
+    text-align: right;
+  }
+  .item-start,
+  .item-end {
+    font-weight: bold;
+    width: 60px;
+  }
+}
+
+.shuttles-header {
+  padding: 10px;
+  user-select: none;
+  font-weight: bold;
+  font-size: 2em;
+
+  >span {
+    text-align: center;
+  }
+}
+
+.shuttles-container {
+  //width: 100%;
+
+  .shuttles-column {
+
+  }
+}

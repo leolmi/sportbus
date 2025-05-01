@@ -1,0 +1,25 @@
+
+.sportbus-page-access {
+  .page-content {
+    width: 300px;
+  }
+}
+
+.access-code {
+  padding-top: 50px;
+  margin-bottom: 50px;
+}
+
+.help-title {
+  text-align: center;
+  opacity: .2;
+  user-select: none;
+  font-size: 2em;
+  padding-top: 20vh;
+}
+
+.code-input {
+  border: none;
+  outline: none;
+  background-color: var(--spb-color-ghost);
+}

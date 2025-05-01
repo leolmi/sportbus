@@ -1,0 +1,53 @@
+.session-date {
+  font-size: .8em;
+  text-align: center;
+  height: 70px;
+}
+
+.session-header {
+  &.today {
+    .session-date-day-num {
+      color: var(--spb-color-accent);
+    }
+  }
+}
+
+.navigation-panel {
+  padding: 0 20px;
+}
+
+.settings-icon {
+  height: 40px;
+  width: 40px;
+  font-size: 40px;
+  padding-top: 15px;
+}
+
+.session-date-day-num {
+  opacity: 1;
+  font-size: 3em;
+  margin: -6px 0;
+  cursor: pointer;
+}
+
+.session-date-day,
+.session-date-month,
+.session-date-year {
+  font-variant: all-small-caps;
+}
+
+.session-date-day {
+  user-select: none;
+}
+
+.session-date-month,
+.session-date-year {
+  opacity: .4;
+  user-select: none;
+}
+
+.hidden-input {
+  opacity: 0;
+  height: 0;
+  width: 40px;
+}

@@ -1,0 +1,10 @@
+.shuttle-errors {
+
+  .shuttle-error-message {
+    margin: 1px 10px;
+    background-color: var(--spb-color-error);
+    color: var(--spb-color-error-contrast);
+    border-radius: 6px;
+    padding: 6px 10px;
+  }
+}

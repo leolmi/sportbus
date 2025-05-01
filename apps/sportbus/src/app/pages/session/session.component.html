@@ -1,0 +1,29 @@
+@if (opening$|async) {
+  <mat-progress-bar mode="indeterminate" class="top-loading-bar"></mat-progress-bar>
+}
+<div class="sportbus-page page-fill" fxLayout="row">
+  <div class="page-space" fxFlex></div>
+  <div class="page-content" fxLayout="column">
+    @if (manager.session$|async; as session) {
+      <session-header></session-header>
+      <div class="page-container" fxFlex>
+        @switch ((manager.page$|async)?.code) {
+          @case ('shuttle') {
+            <session-editor></session-editor>
+          }
+          @case ('settings') {
+            <settings-editor></settings-editor>
+          }
+        }
+      </div>
+      <footer-toolbar></footer-toolbar>
+    } @else {
+      <div class="parent-fill"
+           fxLayout="row" fxLayoutAlign="center center">
+        <div class="grey-label font-size-middle">loading session...</div>
+      </div>
+    }
+  </div>
+  <div class="page-space" fxFlex></div>
+</div>
+

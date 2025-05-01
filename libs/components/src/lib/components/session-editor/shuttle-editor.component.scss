@@ -1,0 +1,55 @@
+
+
+.shuttle-container {
+  min-height: 80px;
+  margin: 10px 0;
+  padding: 10px;
+
+  .shuttle-driver,
+  .shuttle-athletes {
+    border: var(--spb-color-border) 1px solid;
+    border-radius: 6px;
+    padding: 10px;
+  }
+
+  .shuttle-title {
+    padding-bottom: 10px;
+    font-variant: all-petite-caps;
+    font-size: 1.6em;
+  }
+
+  .shuttle-driver {
+    cursor: pointer;
+  }
+
+  .shuttle-athletes {
+    margin-top: 10px;
+    min-height: 80px;
+  }
+
+  &.temporary {
+    .shuttle-driver,
+    .shuttle-athletes {
+      border-style: dashed !important;
+      opacity: .6;
+      background-color: var(--spb-color-ghost);
+    }
+  }
+}
+
+.menu-parson-name {
+  margin-right: 10px;
+}
+.menu-athlete-type {
+  opacity: .4;
+}
+
+.shuttle-athletes-toolbar {
+  padding-bottom: 4px;
+  margin-bottom: 10px;
+}
+.shuttle-athlete-row {
+  &.odd-row {
+    background-color: var(--spb-color-ghost);
+  }
+}

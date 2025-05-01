@@ -1,0 +1,473 @@
+/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+@use './theme-light';
+@use './theme-dark';
+
+html {
+  scroll-behavior: smooth;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-family: Roboto, Helvetica Neue, monospace;
+  overflow: hidden;
+  color-scheme: light dark;
+  @include mat.theme((
+    color: mat.$azure-palette,
+    typography: Roboto,
+    density: 0
+  ));
+}
+
+.cdk-global-scrollblock {
+  overflow: hidden !important;
+}
+
+.mat-icon {
+  font-variant: none !important;
+}
+
+.top-loading-bar {
+  position: fixed !important;
+  z-index: 10;
+  left: 0;
+  width: 100%;
+}
+
+.app-root {
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
+.disabled {
+  opacity: var(--spb-disabled-opacity);
+}
+
+body {
+  background-color: var(--spb-color-background);
+  color: var(--spb-color-foreground);
+
+  --mat-sys-primary: var(--spb-color-accent);
+  --mat-sys-primary-container: var(--spb-color-accent);
+  --mat-badge-background-color: var(--spb-color-accent);
+  --mat-badge-text-color: var(--spb-color-accent-contrast);
+
+
+  &.theme-light {
+    color-scheme: light;
+  }
+  &.theme-dark {
+    color-scheme: dark;
+  }
+
+  .landscape-visible {
+    display: none !important;
+  }
+  &.layout-landscape {
+    .landscape-hidden {
+      display: none !important;
+    }
+    .landscape-visible {
+      display: block !important;
+    }
+  }
+
+  .portrait-visible {
+    display: none !important;
+  }
+  &.layout-portrait {
+    .portrait-hidden {
+      display: none !important;
+    }
+    .portrait-visible {
+      display: block !important;
+    }
+  }
+
+  .narrow-visible {
+    display: none !important;
+  }
+  &.layout-narrow {
+    .narrow-hidden {
+      display: none !important;
+    }
+    .narrow-visible {
+      display: block !important;
+    }
+  }
+
+  .compact-visible {
+    display: none !important;
+  }
+  &.layout-compact {
+    --mdc-icon-button-state-layer-size: 32px;
+    --spb-menu-separator-size: 4px;
+
+    .mat-mdc-menu-item {
+      min-height: 42px !important;
+    }
+
+    .compact-hidden {
+      display: none !important;
+    }
+    .compact-visible {
+      display: block !important;
+    }
+  }
+}
+
+.invisible,
+.hidden {
+  visibility: hidden;
+}
+
+.display-none {
+  display: none;
+}
+
+.opacity-6 {
+  opacity: .6;
+}
+.opacity-4 {
+  opacity: .4;
+}
+
+
+button {
+  .mat-icon {
+    color: inherit !important;
+  }
+}
+
+.fill-foreground {
+  fill: var(--spb-color-foreground);
+}
+
+.separator-v {
+  height: var(--spb-menu-separator-size);
+  margin-bottom: var(--spb-menu-separator-size);
+  border-bottom: var(--spb-color-border) 1px solid;
+}
+
+.separator-h {
+  width: var(--spb-menu-separator-size);
+  margin-right: var(--spb-menu-separator-size);
+  border-right: var(--spb-color-border) 1px solid;
+}
+
+
+.sportbus-page {
+  .page-content {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+  }
+}
+.layout-narrow {
+  .sportbus-page {
+    .page-content {
+
+    }
+  }
+}
+
+.page-editor {
+  box-sizing: border-box;
+  padding: 20px;
+  position: absolute;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  left: 0;
+  top: 0;
+}
+
+
+.grey-label {
+  opacity: .5;
+}
+
+.logo-lab {
+  color: var(--spb-color-accent);
+}
+
+.margin-bottom-20 {
+  margin-bottom: 20px;
+}
+
+.mat-mdc-menu-content {
+  .separator {
+    height: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid rgba(1, 1, 1, .1);
+    width: 100% !important;
+  }
+}
+
+.full-width {
+  width: 100% !important;
+}
+
+.full-height {
+  height: 100% !important;
+}
+
+.mat-mdc-form-field {
+  &.full-height {
+    .mat-mdc-form-field-flex {
+      height: 100%;
+      .mat-mdc-form-field-infix {
+        height: 100%;
+      }
+    }
+  }
+}
+
+.mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+.font-family-monospace {
+  font-family: monospace !important;
+}
+.font-size-big {
+  font-size: 50px !important;
+}
+
+.font-size-middle {
+  font-size: 30px !important;
+}
+
+.text-align-center {
+  text-align: center;
+}
+
+.page-container {
+  position: relative;
+}
+.layout-narrow {
+  .page-container {
+    overflow: auto;
+  }
+}
+
+.sportbus-page {
+  position: absolute;
+  height: 100%;
+  background-color: var(--spb-color-background);
+  color: var(--spb-color-foreground);
+
+  &.page-fill {
+    width: 100%;
+  }
+  &.page-padding {
+    padding: 50px;
+  }
+}
+
+.parent-fill {
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+
+.schema-container {
+  width: 40%;
+  aspect-ratio: 1;
+  padding: 6px;
+  box-sizing: border-box;
+}
+.layout-narrow {
+  .schema-container {
+    width: 100% !important;
+  }
+}
+
+
+.route-active,
+.active {
+  color: var(--spb-color-accent-contrast) !important;
+  background-color: var(--spb-color-accent) !important;
+}
+
+.stat-monitor {
+  padding: 20px;
+
+  .stat-line {
+    min-height: 24px;
+
+    .stat-line-desc {
+      min-width: 180px;
+    }
+    .stat-line-value {
+      margin-left: 10px;
+      font-weight: bold;
+    }
+
+    &.evidence {
+      .stat-line-value {
+        color: var(--spb-color-accent) !important;
+      }
+    }
+  }
+}
+
+.line-top {
+  border-top: var(--spb-color-border) 1px solid;
+}
+.line-bottom {
+  border-bottom: var(--spb-color-border) 1px solid;
+}
+
+
+.user-select-none {
+  user-select: none;
+}
+
+.elevation-z5 {
+  box-shadow: var(--mat-sys-level5);
+}
+
+select {
+  option {
+    background: var(--spb-color-background);
+    color: var(--spb-color-foreground);
+  }
+}
+
+// COLORS
+.spb-colors {
+  background-color: var(--spb-color-background);
+  color: var(--spb-color-foreground);
+}
+.spb-colors-accent {
+  background-color: var(--spb-color-accent);
+  color: var(--spb-color-accent-contrast);
+}
+.spb-colors-secondary {
+  background-color: var(--spb-color-secondary);
+  color: var(--spb-color-secondary-contrast);
+}
+.spb-color-hover {
+  &:hover {
+    background-color: var(--spb-color-hover);
+  }
+}
+
+.spb-color-border {
+  border-color: var(--spb-color-border);
+}
+
+:not([disabled]) {
+  &.spb-color-error {
+    color: var(--spb-color-error);
+  }
+
+  &.spb-color-warning {
+    color: var(--spb-color-warning);
+  }
+
+  &.spb-color-success {
+    color: var(--spb-color-success);
+  }
+
+  &.spb-color-accent {
+    color: var(--spb-color-accent);
+  }
+
+  &.spb-color-secondary {
+    color: var(--spb-color-secondary);
+  }
+}
+
+// NOTIFIES
+
+// mdc-snackbar mat-mdc-snack-bar-container ng-tns-c808971067-1 ng-trigger ng-trigger-state type-success ng-star-inserted
+
+// mdc-snackbar__surface mat-mdc-snackbar-surface ng-tns-c808971067-3
+
+.mdc-snackbar {
+  &.type-success {
+    .mat-mdc-snackbar-surface {
+      background-color: var(--spb-color-success);
+      color: var(--spb-color-success-contrast);
+    }
+  }
+  &.type-warning {
+    .mat-mdc-snackbar-surface {
+      background-color: var(--spb-color-warning);
+      color: var(--spb-color-warning-contrast);
+    }
+  }
+  &.type-error {
+    .mat-mdc-snackbar-surface {
+      background-color: var(--spb-color-error);
+      color: var(--spb-color-error-contrast);
+    }
+  }
+  &.type-info {
+
+  }
+}
+
+.unset-field-width {
+  .mat-mdc-form-field-infix {
+    width: unset !important;
+  }
+}
+
+.layout-narrow {
+  .mat-mdc-dialog-panel {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: unset !important;
+
+    .mat-mdc-dialog-surface {
+      border-radius: 0 !important;
+    }
+    .mat-mdc-dialog-content {
+      max-height: unset !important;
+    }
+  }
+}
+
+.as-button {
+  cursor: pointer;
+}
+
+.spb-basic-input {
+  background-color: var(--spb-color-ghost);
+  border: none;
+  outline: none;
+  padding: 4px;
+  border-radius: 5px;
+  min-width: 0;
+}
+
+.spb-basic-badge {
+  border-radius: 50%;
+  text-align: center;
+  min-width: 2em;
+  height: 2em;
+  line-height: 2;
+  font-size: 0.6em;
+  user-select: none;
+  margin: 2px 6px;
+  background-color: var(--spb-color-accent);
+  color: var(--spb-color-accent-contrast);
+}
+
+.icon-pulse {
+  animation: pulse-rotation 2s infinite;
+}
+
+@keyframes pulse-rotation {
+  0% {transform: rotate(0deg);}
+  50% {transform: rotate(270deg);}
+  100% {transform: rotate(90deg);}
+}

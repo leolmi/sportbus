@@ -1,0 +1,5 @@
+<div class="shuttle-errors" fxLayout="column">
+  @for (msg of messages$|async; track $index) {
+    <div class="shuttle-error-message">{{msg}}</div>
+  }
+</div>

@@ -1,0 +1,16 @@
+body {
+  &.theme-dark {
+    --spb-color-background: #333;
+    --spb-color-foreground: white;
+    --spb-color-off :#444;
+    --spb-color-off-light :#ccc;
+    --spb-color-accent: yellowgreen;
+    --spb-color-accent-contrast: #333;
+    --spb-color-accent-contrast-40: rgba(51, 51, 51, 0.4);
+    --spb-color-secondary: #ff5252;
+    --spb-color-secondary-contrast: #333;
+    --spb-color-border: rgba(250, 250, 250, 0.2);
+    --spb-color-ghost: rgba(250, 250, 250, 0.05);
+    --spb-color-hover: rgba(250,250,250,.1);
+  }
+}

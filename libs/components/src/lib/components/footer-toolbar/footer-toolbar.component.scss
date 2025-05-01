@@ -1,0 +1,17 @@
+.footer-toolbar {
+  .toolbar-button {
+    height: 100%;
+    border-radius: 0;
+  }
+}
+
+::ng-deep {
+  .footer-toolbar {
+    .mat-mdc-icon-button{
+      .mat-mdc-button-persistent-ripple {
+        border-radius: 0;
+      }
+    }
+  }
+}
+

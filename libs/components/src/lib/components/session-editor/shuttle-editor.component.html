@@ -1,0 +1,63 @@
+@if (shuttle$|async; as shuttle) {
+  <div class="shuttle-container"
+       [class.temporary]="shuttle._temporary"
+       [ngClass]="'shuttle-direction-'+shuttle.direction"
+       fxLayout="column" fxFlex>
+
+    <div class="shuttle-title" fxLayout="row" fxLayoutAlign="start center">
+      <span fxFlex>{{shuttle.target}} {{shuttle.time|timeToString}}</span>
+      @if (!shuttle._temporary) {
+        <mat-icon class="as-button" (click)="deleteShuttle()">delete</mat-icon>
+      }
+    </div>
+
+    <!-- DRIVER -->
+    <div class="shuttle-driver spb-color-hover"
+         #menuTrigger="matMenuTrigger"
+         [matMenuTriggerFor]="personsMenu"
+         (click)="openPersonsMenu(menuTrigger, 'driver')"
+         fxLayout="row" fxLayoutAlign="start center">
+      @if (shuttle.driver) {
+        <span fxFlex>{{shuttle.driver|personName:manager.session}}</span>
+      } @else {
+        <span class="disabled" fxFlex>unknown</span>
+      }
+      <mat-icon>sports_motorsports</mat-icon>
+    </div>
+
+    <!-- ATHLETES -->
+    <div class="shuttle-athletes spb-color-hover">
+      <div class="shuttle-athletes-toolbar line-bottom"
+           fxLayout="row" fxLayoutAlign="start center">
+        <div fxFlex></div>
+        <mat-icon class="as-button"
+                  [matMenuTriggerFor]="personsMenu"
+                  #menuAthletesTrigger="matMenuTrigger"
+                  (click)="openPersonsMenu(menuAthletesTrigger, 'athlete')"
+        >add</mat-icon>
+      </div>
+      <div class="shuttle-athletes-container">
+        @for (atl of shuttle.athletes; track $index; let odd = $odd) {
+          <div class="shuttle-athlete-row"
+               [class.odd-row]="odd"
+               fxLayout="row" fxLayoutAlign="start center">
+            <span fxFlex>{{atl|personName:manager.session}}</span>
+            <mat-icon class="as-button" (click)="removeShuttleAthlete(atl)">close</mat-icon>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+  <mat-menu #personsMenu="matMenu">
+    @for (prs of menuPersons$|async; track $index) {
+      <button mat-menu-item
+              (click)="addPerson(prs)">
+        <mat-icon>{{PERSON_ICON[prs.type]}}</mat-icon>
+        <span class="menu-parson-name">{{prs.name}}</span>
+        @if (prs.type=='athlete') {
+          <span class="menu-athlete-type">{{prs.group|groupName:manager.session}}</span>
+        }
+      </button>
+    }
+  </mat-menu>
+}

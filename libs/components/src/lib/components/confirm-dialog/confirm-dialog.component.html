@@ -1,0 +1,17 @@
+@if (config.title) {
+  <h2 mat-dialog-title>{{config.title}}</h2>
+}
+<div mat-dialog-content>
+  <div class="confirm-message">{{config.message}}</div>
+</div>
+<mat-dialog-actions fxLayoutAlign="space-around center">
+  @if (config.showCancel) {
+    <button mat-flat-button mat-dialog-close>{{config.cancelCaption||'Cancel'}}</button>
+  }
+  @if (config.showNo) {
+    <button mat-flat-button [mat-dialog-close]="false">{{config.noCaption||'No'}}</button>
+  }
+  @if (config.showYes) {
+    <button mat-flat-button [mat-dialog-close]="true">{{config.yesCaption||'Yes'}}</button>
+  }
+</mat-dialog-actions>
