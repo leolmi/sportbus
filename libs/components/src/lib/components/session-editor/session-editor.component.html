@@ -12,9 +12,14 @@
                  (click)="toggleAthlete(atl)"
                  [class.present]="atlMap[atl.code]==='p'"
                  [class.absent]="atlMap[atl.code]==='a'"
+                 [class.ready]="atlMap[atl.code]==='r'"
                  [class.unknown]="!atlMap[atl.code]">
               <span class="text">{{atl.name}}</span>
-              <mat-icon>{{ICON_BY_CODE[atlMap[atl.code]]||UNKNOWN_ICON}}</mat-icon>
+              @if (manager.sessionOnDay$|async|activeDirections:atl; as directions) {
+                <mat-icon>{{ICON_BY_DIRECTIONS[directions]}}</mat-icon>
+              } @else {
+                <mat-icon>{{ICON_BY_CODE[atlMap[atl.code]]||UNKNOWN_ICON}}</mat-icon>
+              }
               @if (atl.group) {
                 <div class="athlete-group">{{atl.group|groupName:manager.session}}</div>
               }
@@ -36,26 +41,30 @@
       </div>
       <!-- navette necessarie A/R -> chi li porta -->
       <div class="shuttles">
-        <div class="shuttles-header"
-             fxLayout="row" fxLayoutAlign="start center">
-          <span fxFlex>A</span>
-          <span fxFlex>R</span>
-        </div>
-        <div class="shuttles-container" fxLayout="row">
+        <div class="shuttles-container" [fxLayout]="shuttlesLayout$|async">
           <div class="shuttles-column" fxLayout="column" fxFlex>
+            <div class="shuttle-column-header" fxLayout="column">
+              <div class="direction" [class.ready]="manager.sessionOnDay$|async|isReadyDirection:'A'">A</div>
+              <shuttle-errors direction="A"></shuttle-errors>
+            </div>
             @for (shA of shuttles$|async|shuttleType:'A'; track $index) {
               <shuttle-editor [shuttle]="shA"></shuttle-editor>
             }
-            <shuttle-errors direction="A"></shuttle-errors>
           </div>
-          <div class="shuttles-column" fxLayout="column" fxFlex>
+          <div class="shuttles-column spb-background-ghost" fxLayout="column" fxFlex>
+            <div class="shuttle-column-header" fxLayout="column">
+              <div class="direction" [class.ready]="manager.sessionOnDay$|async|isReadyDirection:'R'">R</div>
+              <shuttle-errors direction="R"></shuttle-errors>
+            </div>
             @for (shR of shuttles$|async|shuttleType:'R'; track $index) {
               <shuttle-editor [shuttle]="shR"></shuttle-editor>
             }
-            <shuttle-errors direction="R"></shuttle-errors>
           </div>
         </div>
       </div>
+
+      <!-- daily chat -->
+       <daily-chat></daily-chat>
     }
   } @else if (manager.isEmpty$|async) {
     <div class="empty-container click-content" (click)="goToConfiguration()">configure session...</div>

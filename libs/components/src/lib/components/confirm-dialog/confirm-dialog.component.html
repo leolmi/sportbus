@@ -6,7 +6,7 @@
 </div>
 <mat-dialog-actions fxLayoutAlign="space-around center">
   @if (config.showCancel) {
-    <button mat-flat-button mat-dialog-close>{{config.cancelCaption||'Cancel'}}</button>
+    <button mat-button mat-dialog-close>{{config.cancelCaption||'Cancel'}}</button>
   }
   @if (config.showNo) {
     <button mat-flat-button [mat-dialog-close]="false">{{config.noCaption||'No'}}</button>

@@ -1,0 +1,70 @@
+@if (shuttle$|async; as shuttle) {
+  <div class="shuttle-container"
+       [class.temporary]="shuttle._temporary"
+       [ngClass]="'shuttle-direction-'+shuttle.direction"
+       fxLayout="column" fxFlex>
+
+    <div class="shuttle-title" fxLayout="row" fxLayoutAlign="start center">
+      <span fxFlex>{{shuttle.target}} {{shuttle.time|timeToString}}</span>
+      @if (!shuttle._temporary) {
+        <mat-icon class="as-button" (click)="deleteShuttle()">delete</mat-icon>
+      }
+    </div>
+
+    <!-- DRIVER & ATHLETES -->
+    <div class="shuttle-athletes spb-color-hover">
+
+      <!-- DRIVER -->
+      <div class="shuttle-athletes-toolbar line-bottom"
+           fxLayout="row" fxLayoutAlign="start center">
+
+        <div class="shuttle-driver"
+             fxLayout="row" fxLayoutAlign="start center"
+             [matMenuTriggerFor]="personsMenu"
+             #menuTrigger="matMenuTrigger"
+             (click)="openPersonsMenu(menuTrigger, 'driver')"
+             fxFlex>
+          <mat-icon class="as-button margin-right">sports_motorsports</mat-icon>
+          @if (shuttle.driver) {
+            <span fxFlex>{{shuttle.driver|personName:manager.session}}</span>
+          } @else {
+            <span class="disabled" fxFlex>no driver yet</span>
+          }
+        </div>
+        <mat-icon class="as-button margin-right-2"
+                  [class.disabled]="(shuttle.athletes||[]).length<1"
+                  (click)="editTimes()">schedule</mat-icon>
+        <mat-icon class="as-button"
+                  [matMenuTriggerFor]="personsMenu"
+                  #menuAthletesTrigger="matMenuTrigger"
+                  (click)="openPersonsMenu(menuAthletesTrigger, 'athlete')"
+        >add</mat-icon>
+      </div>
+
+      <!-- ATHLETES -->
+      <div class="shuttle-athletes-container">
+        @for (atl of shuttle.athletes; track $index; let odd = $odd) {
+          <div class="shuttle-athlete-row spb-color-hover"
+               fxLayout="row" fxLayoutAlign="start center">
+            <span fxFlex>{{atl|personName:manager.session}}</span>
+            <span class="atl-time margin-right-2">{{atl|athleteTime:shuttle}}</span>
+            <mat-icon class="as-button" (click)="removeShuttleAthlete(atl)">close</mat-icon>
+          </div>
+        }
+      </div>
+
+    </div>
+  </div>
+  <mat-menu #personsMenu="matMenu">
+    @for (prs of menuPersons$|async; track $index) {
+      <button mat-menu-item
+              (click)="addPerson(prs)">
+        <mat-icon>{{PERSON_ICON[prs.type]}}</mat-icon>
+        <span class="menu-parson-name">{{prs.name}}</span>
+        @if (prs.type=='athlete') {
+          <span class="menu-athlete-type">{{prs.group|groupName:manager.session}}</span>
+        }
+      </button>
+    }
+  </mat-menu>
+}

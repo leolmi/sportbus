@@ -14,23 +14,26 @@
 }
 
 .persons-list {
-  //border: var(--spb-color-border) 1px dashed;
-  //padding: 20px;
   box-sizing: border-box;
+  margin-bottom: var(--spb-padding);
 
   .person-selector {
     border: var(--spb-color-border) 1px dashed;
-    border-radius: 10px;
+    border-radius: var(--spb-padding);
     width: fit-content;
     display: inline-block !important;
-    margin: 10px;
-    padding: 10px;
+    margin: var(--spb-padding);
+    padding: var(--spb-padding);
     cursor: pointer;
     position: relative;
 
-    &.present {
+    &.ready {
       background-color: var(--spb-color-success);
       color: var(--spb-color-success-contrast);
+    }
+    &.present {
+      background-color: var(--spb-color-warning);
+      color: var(--spb-color-warning-contrast);
     }
     &.absent {
       background-color: var(--spb-color-error);
@@ -43,22 +46,29 @@
     .text {
       float: left;
       margin-top: 3px;
-      margin-right: 10px;
+      margin-right: var(--spb-padding);
       user-select: none;
     }
     .athlete-group {
       position: absolute;
       bottom: 0;
       width: 100%;
-      font-size: 9px;
+      font-size: .6em;
       padding-bottom: 4px;
       opacity: .8;
+    }
+
+    .athlete-active-directions {
+      min-width: 24px;
+      min-height: 24px;
     }
   }
 }
 
 .calendar {
-  padding: 10px;
+  padding: var(--spb-padding);
+  background-color: var(--spb-color-foreground);
+  color: var(--spb-color-background);
 }
 
 .calendar-item {
@@ -77,21 +87,18 @@
   }
 }
 
-.shuttles-header {
-  padding: 10px;
+.shuttle-column-header {
   user-select: none;
-  font-weight: bold;
-  font-size: 2em;
+  margin-top: var(--spb-padding);
 
-  >span {
+  .direction {
+    font-weight: bold;
+    font-size: 2em;
     text-align: center;
-  }
-}
+    color: var(--spb-color-error);
 
-.shuttles-container {
-  //width: 100%;
-
-  .shuttles-column {
-
+    &.ready {
+      color: var(--spb-color-success);
+    }
   }
 }

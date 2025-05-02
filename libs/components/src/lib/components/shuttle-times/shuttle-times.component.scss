@@ -1,0 +1,22 @@
+.sub-title {
+  opacity: .5;
+  font-size: .8em;
+}
+
+.athlete-row {
+  padding: var(--spb-padding);
+  font-size: 1.2em;
+  > .spb-basic-input {
+    font-size: inherit;
+  }
+}
+
+.time-input {
+  margin: 0 var(--spb-padding);
+}
+
+.athlete-toolbar {
+  .first-button {
+    margin-right: var(--spb-padding);
+  }
+}

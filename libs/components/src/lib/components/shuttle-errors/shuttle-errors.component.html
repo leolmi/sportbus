@@ -1,0 +1,5 @@
+<div class="shuttle-errors" fxLayout="column">
+  @if (message$|async; as msg) {
+    <div class="shuttle-error-message">{{msg}}</div>
+  }
+</div>

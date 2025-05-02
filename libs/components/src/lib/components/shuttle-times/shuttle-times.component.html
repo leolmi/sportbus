@@ -1,0 +1,30 @@
+<h2 mat-dialog-title fxLayout="column">
+  <span>{{(title$|async)}}</span>
+  <span class="sub-title">{{shuttle?.target||''}}</span>
+</h2>
+<div mat-dialog-content>
+  @for (item of items$|async; track $index; let last = $last; let first = $first) {
+    <div class="athlete-row" fxLayout="row" fxLayoutAlign="start center">
+      <div fxFlex>{{item.athlete?.name||'unknown'}}</div>
+<!--      <div>{{item.time|timeToString}}</div>-->
+      <input type="text"
+             class="spb-basic-input time-input text-align-center"
+             [value]="item.time|timeToString"
+             placeholder="00:00"
+             (change)="updateTime($event, $index)" fxFlex>
+      <div class="athlete-toolbar" fxLayout="row" fxLayoutAlign="start center">
+        <mat-icon class="as-button first-button"
+                  [class.disabled]="first"
+                  (click)="moveItem($index, -1)">keyboard_arrow_up</mat-icon>
+        <mat-icon class="as-button"
+                  [class.disabled]="last"
+                  (click)="moveItem($index, 2)">keyboard_arrow_down</mat-icon>
+      </div>
+    </div>
+  }
+</div>
+<mat-dialog-actions fxLayoutAlign="space-around center">
+  <div fxFlex></div>
+  <button mat-flat-button [mat-dialog-close]="result$|async">Confirm</button>
+  <button mat-button mat-dialog-close>Cancel</button>
+</mat-dialog-actions>

@@ -1,5 +1,9 @@
 ## TODO
 
+- [ ] possibilità di specificare orari e note oppure ordinare gli elementi sulle navette;
+- [ ] chat;
+- [ ] verifiche usabilità
+- [ ] deploy
 - [ ] sessione privata (???):
   - in fase di creazione indicare l'opzione "private"
   - ogni nuovo utente deve essere abilitato da uno esistente
@@ -22,3 +26,4 @@
   - inserimento automatico delle navette necessarie A/R (modificabile)
     - associazione atleta navetta A/R
 - visualizzazione mensile
+

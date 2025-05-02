@@ -6,8 +6,8 @@
 }
 
 .access-code {
-  padding-top: 50px;
-  margin-bottom: 50px;
+  padding-top: calc(var(--spb-padding) * 5);
+  margin-bottom: calc(var(--spb-padding) * 5);
 }
 
 .help-title {

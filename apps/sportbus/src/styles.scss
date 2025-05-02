@@ -7,12 +7,29 @@ html {
   scroll-behavior: smooth;
 }
 
+body {
+  --spb-font-size: 16px;
+  --spb-padding: 10px;
+
+  &.layout-narrow {
+    --spb-font-size: 14px;
+    --spb-padding: 7px;
+  }
+
+  &.layout-compact {
+    --spb-font-size: 12px;
+    --spb-padding: 4px;
+  }
+}
+
+
 html, body {
   margin: 0;
   padding: 0;
   width: 100%;
   height: 100%;
   font-family: Roboto, Helvetica Neue, monospace;
+  font-size: var(--spb-font-size);
   overflow: hidden;
   color-scheme: light dark;
   @include mat.theme((
@@ -22,8 +39,16 @@ html, body {
   ));
 }
 
+
 .cdk-global-scrollblock {
   overflow: hidden !important;
+}
+
+.margin-right {
+  margin-right: var(--spb-padding);
+}
+.margin-right-2 {
+  margin-right: calc(var(--spb-padding) * 2);
 }
 
 .mat-icon {
@@ -177,7 +202,7 @@ button {
 
 .page-editor {
   box-sizing: border-box;
-  padding: 20px;
+  padding: calc(var(--spb-padding) * 2);
   position: absolute;
   width: 100%;
   max-width: 100%;
@@ -191,18 +216,22 @@ button {
   opacity: .5;
 }
 
+.spb-background-ghost {
+  background-color: var(--spb-color-ghost);
+}
+
 .logo-lab {
   color: var(--spb-color-accent);
 }
 
 .margin-bottom-20 {
-  margin-bottom: 20px;
+  margin-bottom: calc(var(--spb-padding) * 2);
 }
 
 .mat-mdc-menu-content {
   .separator {
-    height: 10px;
-    margin-bottom: 10px;
+    height: var(--spb-padding);
+    margin-bottom: var(--spb-padding);
     border-bottom: 1px solid rgba(1, 1, 1, .1);
     width: 100% !important;
   }
@@ -235,11 +264,11 @@ button {
   font-family: monospace !important;
 }
 .font-size-big {
-  font-size: 50px !important;
+  font-size: 3em !important;
 }
 
 .font-size-middle {
-  font-size: 30px !important;
+  font-size: 1.4em !important;
 }
 
 .text-align-center {
@@ -265,7 +294,7 @@ button {
     width: 100%;
   }
   &.page-padding {
-    padding: 50px;
+    padding: calc(var(--spb-padding) * 5);
   }
 }
 
@@ -279,7 +308,7 @@ button {
 .schema-container {
   width: 40%;
   aspect-ratio: 1;
-  padding: 6px;
+  padding: calc(var(--spb-padding) / 2);
   box-sizing: border-box;
 }
 .layout-narrow {
@@ -296,16 +325,16 @@ button {
 }
 
 .stat-monitor {
-  padding: 20px;
+  padding: calc(var(--spb-padding) * 2);
 
   .stat-line {
-    min-height: 24px;
+    min-height: 1.5em;
 
     .stat-line-desc {
       min-width: 180px;
     }
     .stat-line-value {
-      margin-left: 10px;
+      margin-left: var(--spb-padding);
       font-weight: bold;
     }
 
@@ -438,6 +467,13 @@ select {
 
 .as-button {
   cursor: pointer;
+
+  &.disabled {
+    pointer-events: none;
+  }
+  &:hover {
+    background-color: var(--spb-color-ghost);
+  }
 }
 
 .spb-basic-input {

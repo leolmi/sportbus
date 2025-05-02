@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { SessionDoc, SessionOnDayDoc } from '../../model';
 import { environment } from '../../environments/environment';
@@ -7,7 +7,7 @@ import { cloneDeep } from 'lodash';
 
 
 @Injectable()
-export class SessionService {
+export class SessionService implements OnModuleInit {
 
   constructor(@Inject('SESSION_MODEL') private readonly sessionModel: Model<SessionDoc>,
               @Inject('SESSION_ON_DAY_MODEL') private readonly sessionOnDayModel: Model<SessionOnDayDoc>) {}
@@ -107,6 +107,18 @@ export class SessionService {
     return resp;
   }
 
+  async deleteDeprecatedSessionOnDays(): Promise<boolean> {
+    try {
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const result = await this.sessionOnDayModel.deleteMany({ date: { $lte: yesterday } }).exec();
+      console.log(`checking for deprecated session-on-day: ${result.deletedCount} items deleted`);
+      return true;
+    } catch (err) {
+      console.error(`error while deleting all deprecated sessions-on-day`, err);
+    }
+    return false;
+  }
 
   async deleteAll(): Promise<boolean> {
     try {
@@ -127,6 +139,10 @@ export class SessionService {
       console.error(`error while deleting all sessions-on-day`, err);
     }
     return false;
+  }
+
+  onModuleInit(): any {
+    this.deleteDeprecatedSessionOnDays();
   }
 }
 

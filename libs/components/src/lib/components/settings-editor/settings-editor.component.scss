@@ -10,7 +10,7 @@
 }
 
 .spb-basic-input {
-  margin-right: 10px;
+  margin-right: var(--spb-padding);
   &.type {
     min-width: 84px;
   }

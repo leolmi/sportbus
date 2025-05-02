@@ -8,7 +8,16 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatInputModule } from '@angular/material/input';
 import { EditorBase } from '../editor.base';
 import { Clipboard, ClipboardModule } from '@angular/cdk/clipboard';
-import { CalendarItem, getTimeString, Group, NotificationType, Person, Times, WEEK_DAYS } from '@olmi/model';
+import {
+  CalendarItem,
+  getTimeMlsValue,
+  getTimeString,
+  Group,
+  NotificationType,
+  Person,
+  Times,
+  WEEK_DAYS
+} from '@olmi/model';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { reduce as _reduce, remove as _remove, set as _set } from 'lodash';
 import { map, Observable } from 'rxjs';
@@ -125,13 +134,6 @@ export class SettingsEditorComponent extends EditorBase {
       return true;
     });
   }
-}
-
-const getTimeMlsValue = (t: string): number => {
-  const vs = t.split(':');
-  const hh = parseInt(vs[0], 10) || 0;
-  const mm = parseInt(vs[1], 10) || 0;
-  return hh * 60 * 60 * 1000 + mm * 60 * 1000;
 }
 
 const getTimes = (ts: string): Times|undefined => {

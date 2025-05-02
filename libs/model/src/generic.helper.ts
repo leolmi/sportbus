@@ -241,6 +241,20 @@ export const getTimeString = (t: number): string => {
   }
 }
 
+const getTimeValues = (v: string): string[] => {
+  const rgx = /(\d{1,2}).*?(\d{1,2})/g;
+  const m = rgx.exec(v);
+  return (m && m.length > 2) ? [m[1], m[2]] : [];
+}
+
+export const getTimeMlsValue = (t: string): number => {
+  const vs = getTimeValues(t);
+  if (vs.length !== 2) return 0;
+  const hh = parseInt(vs[0], 10) || 0;
+  const mm = parseInt(vs[1], 10) || 0;
+  return hh * 60 * 60 * 1000 + mm * 60 * 1000;
+}
+
 export const stringToDay = (day?: string): Date => {
   const str = (day || '');
   if (str.length !== 8) return new Date();
@@ -255,3 +269,19 @@ export const isTheSameDay = (d1?: Date, d2?: Date): boolean =>
   d1.getDay() === d2.getDay() &&
   d1.getMonth() === d2.getMonth() &&
   d1.getFullYear() === d2.getFullYear();
+
+
+/**
+ * Sposta un elemento della collezione da un indice ad un altro.
+ * Modifica la collezione originale.
+ * Restituisce l'elemento spostato.
+ * @param arr
+ * @param fromIndex
+ * @param toIndex
+ */
+export const move = (arr: any[], fromIndex: number, toIndex: number): boolean => {
+  const item = arr.splice(fromIndex, 1);
+  if (fromIndex < toIndex) toIndex--;
+  if (item) arr.splice(toIndex, 0, item[0]);
+  return !!item;
+}

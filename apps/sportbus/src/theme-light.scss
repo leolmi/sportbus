@@ -1,6 +1,6 @@
 body {
   --spb-color-background: white;
-  --spb-color-foreground: #111;
+  --spb-color-foreground: #333;
   --spb-color-off :#ddd;
   --spb-color-off-light :#eee;
   --spb-color-accent: rgb(255, 64, 129);
@@ -10,6 +10,7 @@ body {
   --spb-color-secondary-contrast: white;
   --spb-color-border: rgba(17, 17, 17, 0.1);
   --spb-color-ghost: rgba(1, 1, 1, 0.05);
+
   --spb-color-hover: rgba(1,1,1,.1);
 
   --spb-color-success: green;
