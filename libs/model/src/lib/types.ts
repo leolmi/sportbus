@@ -1,4 +1,10 @@
 /**
+ * available locales
+ */
+
+export const Locales = ['it', 'en'] as const;
+export type Locale = typeof Locales[number];
+/**
  * dizionario tipizzato
  */
 export type Dictionary<T> = { [key: string]: T; }
@@ -7,11 +13,6 @@ export type Dictionary<T> = { [key: string]: T; }
  * tipologie basiche di dato
  */
 export type ValueType = 'string'|'integer'|'number';
-
-/**
- * tipologie di persone
- */
-export type PersonType = 'driver'|'athlete';
 
 /**
  * tipologie di persone

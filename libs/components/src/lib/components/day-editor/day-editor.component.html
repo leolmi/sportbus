@@ -1,0 +1,37 @@
+<h2 mat-dialog-title class="capitalize">{{day}}</h2>
+<div class="spb-editor-dialog-content" mat-dialog-content>
+  <div class="spb-editor-dialog-container" fxLayout="column">
+    @if (value$|async; as citem) {
+      <!-- target -->
+      <mat-label class="capitalize" spb-i18n>destination</mat-label>
+      <input [value]="citem.target||''"
+             class="spb-basic-input big-input full-width margin-bottom-2"
+             (input)="updateValue$(value$, $event, 'target','target.value')">
+
+      <div class="day-editor-times margin-bottom-2" fxLayout="row" fxLayoutAlign="start center">
+        <div class="spb-editor-container">
+          <!-- start -->
+          <mat-label spb-i18n>Start time</mat-label>
+          <input [ngModel]="start"
+                 mask="Hh:m0"
+                 class="spb-basic-input big-input full-width margin-bottom-2"
+                 (input)="setTimeValue($event, 'start')">
+        </div>
+        <div class="separator margin-right-2"></div>
+        <div class="spb-editor-container">
+          <!-- end -->
+          <mat-label spb-i18n>End time</mat-label>
+          <input [ngModel]="end"
+                 mask="Hh:m0"
+                 class="spb-basic-input big-input full-width margin-bottom-2"
+                 (input)="setTimeValue($event, 'end')">
+        </div>
+      </div>
+    }
+  </div>
+</div>
+<mat-dialog-actions>
+  <div fxFlex></div>
+  <button mat-flat-button (click)="apply()" spb-i18n>Ok</button>
+  <button mat-button mat-dialog-close spb-i18n>Cancel</button>
+</mat-dialog-actions>

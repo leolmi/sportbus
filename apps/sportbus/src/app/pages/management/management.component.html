@@ -1,14 +1,122 @@
 <div class="sportbus-page sportbus-page-management page-fill" fxLayout="row">
   <div class="page-space" fxFlex></div>
   <div class="page-content" fxLayout="column">
-    <div class="management-section">
-      <div class="management-row" fxLayout="row" fxLayoutAlign="start center">
-        <div fxFlex>Delete all session-on-day</div>
-        <button mat-raised-button color="danger" (click)="deleteAllSod()">
-          delete
+
+    <div class="main-toolbar" fxLayout="row" fxLayoutAlign="start center">
+      <div fxFlex></div>
+      @if ((state.theme$|async)===THEME_DARK) {
+        <button mat-icon-button
+                [matTooltip]="SYSTEM_MENU_ITEMS.lightTheme.text"
+                (click)="state.toggleTheme()">
+          <mat-icon>{{SYSTEM_MENU_ITEMS.lightTheme.icon}}</mat-icon>
         </button>
-      </div>
+      } @else {
+        <button mat-icon-button
+                [matTooltip]="SYSTEM_MENU_ITEMS.darkTheme.text"
+                (click)="state.toggleTheme()">
+          <mat-icon>{{SYSTEM_MENU_ITEMS.darkTheme.icon}}</mat-icon>
+        </button>
+      }
+      <button mat-icon-button matTooltip="close management" (click)="exit()">
+        <mat-icon>close</mat-icon>
+      </button>
     </div>
+
+    @if (isAuthenticated$|async) {
+      <!-- ACTIONS -->
+      <div class="management-section">
+        <div class="management-section-title">Commands</div>
+        <div class="management-row spb-color-hover" fxLayout="row" fxLayoutAlign="start center">
+          <div fxFlex>Logout management</div>
+          <button mat-flat-button color="danger" (click)="logout()">
+            logout
+          </button>
+        </div>
+        <div class="management-row spb-color-hover" fxLayout="row" fxLayoutAlign="start center">
+          <div fxFlex>Delete all session-on-day</div>
+          <button mat-flat-button color="danger" (click)="deleteAllSod()">
+            delete
+          </button>
+        </div>
+      </div>
+
+      <!-- SESSIONS -->
+      <div class="management-section">
+        <div class="management-section-title">Sessions</div>
+        <div class="management-row search-row" fxLayout="row" fxLayoutAlign="start center">
+          <input class="spb-basic-input full-width"
+                 placeholder="search for..."
+                 [value]="filterText$|async"
+                 (change)="updateFilter($event)">
+          @if (filterText$|async) {
+            <mat-icon class="as-button"
+                      (click)="clearFilter()">cancel</mat-icon>
+          }
+        </div>
+        @for (ses of sessions$|async; track index; let index = $index) {
+          <div class="management-detail-row spb-color-hover" fxLayout="row" fxLayoutAlign="start center">
+            <div class="row-num">{{(index+1)}}</div>
+            <div fxFlex fxLayout="row" fxLayoutAlign="start center">
+              <span class="row-main">{{ses.code}}</span>
+              <span class="row-detail">{{ses.lu|dateFormat:'dd/MM/yyyy'}}</span>
+              <mat-icon class="margin-left-2">group</mat-icon>
+              <span class="row-detail">{{ses.persons.length}}</span>
+            </div>
+            @if (state.layout$|async; as layout) {
+              @if (layout.compact) {
+                <button mat-icon-button
+                        #menuTrigger="matMenuTrigger"
+                        [matMenuTriggerFor]="sessionActionMenu"
+                        (click)="menuTrigger.openMenu()">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #sessionActionMenu="matMenu">
+                  <button mat-menu-item (click)="openSession(ses)">
+                    <mat-icon>visibility</mat-icon>
+                    <span>open session in other tab</span>
+                  </button>
+                  <button mat-menu-item (click)="deleteSession(ses)">
+                    <mat-icon>delete</mat-icon>
+                    <span>delete session</span>
+                  </button>
+                  <button mat-menu-item (click)="deleteSessionSods(ses)">
+                    <mat-icon>delete_sweep</mat-icon>
+                    <span>delete session-no-day data</span>
+                  </button>
+                </mat-menu>
+              } @else {
+                <button mat-icon-button
+                        matTooltip="open session in other tab"
+                        (click)="openSession(ses)">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+                <button mat-icon-button
+                        matTooltip="delete session"
+                        (click)="deleteSession(ses)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+                <button mat-icon-button
+                        matTooltip="delete session-no-day data"
+                        (click)="deleteSessionSods(ses)">
+                  <mat-icon>delete_sweep</mat-icon>
+                </button>
+              }
+            }
+          </div>
+        }
+      </div>
+    } @else {
+      <!-- LOGIN -->
+      <div class="management-section">
+        <div class="management-section-title" spb-i18n>Management Access</div>
+        <div class="management-row" fxLayout="row" fxLayoutAlign="center center">
+          <input class="management-key-input spb-basic-input big-input full-width"
+                 [placeholder]="'insert key'|i18n"
+                 [value]="accessKey$|async"
+                 (change)="updateAccessKey($event)">
+        </div>
+      </div>
+    }
   </div>
   <div class="page-space" fxFlex></div>
 </div>

@@ -1,25 +1,65 @@
 
 .sportbus-page-access {
+  background: transparent !important;
   .page-content {
-    width: 300px;
+    width: 320px;
+  }
+}
+
+//theme-button {
+//  position: absolute;
+//  right: var(--spb-padding);
+//  top: var(--spb-padding);
+//}
+essential-toolbar {
+  position: absolute;
+  right: var(--spb-padding);
+  top: var(--spb-padding);
+}
+
+.top-space {
+  height: 15vh;
+}
+
+.app-title {
+  text-align: center;
+  margin: 50px 0;
+
+  .main-title {
+    font-size: 5.4em;
+    font-weight: 100;
+    text-shadow: 0 0 26px var(--spb-color-accent);
+    color: var(--spb-color-accent);
+    margin-bottom: var(--spb-padding);
+  }
+
+  .sub-title {
+    opacity: .5;
+    font-size: 1.3em;
   }
 }
 
 .access-code {
+  position: relative;
   padding-top: calc(var(--spb-padding) * 5);
   margin-bottom: calc(var(--spb-padding) * 5);
-}
 
-.help-title {
-  text-align: center;
-  opacity: .2;
-  user-select: none;
-  font-size: 2em;
-  padding-top: 20vh;
+  .placeholder {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    opacity: .2;
+    user-select: none;
+    font-size: 1.3em;
+    margin-top: 3px;
+    pointer-events: none;
+    white-space: pre-wrap;
+  }
 }
 
 .code-input {
   border: none;
   outline: none;
   background-color: var(--spb-color-ghost);
+  border-radius: var(--spb-padding);
 }

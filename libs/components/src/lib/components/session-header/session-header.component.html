@@ -1,39 +1,30 @@
 <div class="session-header"
      [class.today]="isToday$|async"
-     [class.is-settings]="isSettings$|async"
      fxLayout="row" fxLayoutAlign="start center">
   <div class="navigation-panel"
        fxLayout="row" fxLayoutAlign="start center" fxFlex>
-    @if (isShuttle$|async) {
-      <button mat-icon-button (click)="prev()">
-        <mat-icon>arrow_back_ios</mat-icon>
-      </button>
-    }
+    <button mat-icon-button (click)="prev()">
+      <mat-icon>arrow_back_ios</mat-icon>
+    </button>
   </div>
   <div class="session-date" fxLayout="column">
-    @if (isSettings$|async) {
-      <mat-icon class="settings-icon">settings</mat-icon>
-    } @else {
-      <span class="session-date-day">{{day$|async}}</span>
-      <span class="session-date-day-num"
-            (click)="picker.open()">{{dayNum$|async}}</span>
-      <span class="session-date-month">{{month$|async}} {{year$|async}}</span>
-      <mat-form-field class="hidden-input">
-        <mat-label>Choose a date</mat-label>
-        <input matInput
-               [matDatepicker]="picker"
-               [value]="manager.date$|async"
-               (dateChange)="setDate($event)">
-        <mat-datepicker #picker></mat-datepicker>
-      </mat-form-field>
-    }
+    <span class="session-date-day">{{day$|async}}</span>
+    <span class="session-date-day-num"
+          (click)="picker.open()">{{dayNum$|async}}</span>
+    <span class="session-date-month">{{month$|async}} {{year$|async}}</span>
+    <mat-form-field class="hidden-input">
+      <mat-label>Choose a date</mat-label>
+      <input matInput
+             [matDatepicker]="picker"
+             [value]="manager.date$|async"
+             (dateChange)="setDate($event)">
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
   </div>
   <div class="navigation-panel"
        fxLayout="row" fxLayoutAlign="end center" fxFlex>
-    @if (isShuttle$|async) {
-      <button mat-icon-button (click)="next()">
-        <mat-icon>arrow_forward_ios</mat-icon>
-      </button>
-    }
+    <button mat-icon-button (click)="next()">
+      <mat-icon>arrow_forward_ios</mat-icon>
+    </button>
   </div>
 </div>

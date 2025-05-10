@@ -1,7 +1,9 @@
-import { Page } from './page';
+import { Locale } from './types';
 
 export const SPORTBUS_AUTHOR_LINK = 'https://github.com/leolmi/sportbus';
-export const SPORTBUS_NAME = 'SportBus';
+export const SPORTBUS_NAME = 'Shuttles'; // 'OwnBus';
+export const NAME_PART_STANDARD = '';
+export const NAME_PART_ACCENT = SPORTBUS_NAME;
 export const BUS_PREFIX = [`%c${SPORTBUS_NAME}`, 'color:#111;background-color:yellowgreen;padding:2px 6px;'];
 export const SPORTBUS_SESSION_DEVELOP = 'develop';
 export const SPORTBUS_SESSION_STANDARD = 'standard';
@@ -13,6 +15,9 @@ export const SPORTBUS_USER_OPTIONS_FEATURE = 'user_options';
 export const THEME_LIGHT = 'light';
 export const THEME_DARK = 'dark';
 export const DEFAULT_THEME = THEME_LIGHT;
+export const DEFAULT_LOCALE: Locale = 'it';
+
+export const MANAGEMENT_HEADER = 'MANAGEMENT-USER-KEY';
 
 export const THEME_ICON: any = {
   [THEME_LIGHT]: 'light_mode',
@@ -35,7 +40,10 @@ export const SYSTEM_MENU_CODE: any = {
   darkTheme: 'system-dark-theme',
   lightTheme: 'system-light-theme',
   globalDebug: 'system-debug-mode',
-  management: 'system-open-management'
+  management: 'system-open-management',
+  info: 'system-show-info',
+  locale_it: 'system-locale-it',
+  locale_en: 'system-locale-en'
 }
 
 export const SYSTEM_MENU_ITEMS: any = {
@@ -74,55 +82,49 @@ export const SYSTEM_MENU_ITEMS: any = {
     icon: 'settings',
     text: 'Open management page',
     logic: 'system',
+  },
+  info: {
+    code: SYSTEM_MENU_CODE.info,
+    icon: 'info',
+    text: 'Show infos',
+    logic: 'system',
+  },
+  locale_en: {
+    code: SYSTEM_MENU_CODE.locale_en,
+    icon: 'EN',
+    textAsIcon: true,
+    text: 'Switch to other language',
+    logic: 'system',
+  },
+  locale_it: {
+    code: SYSTEM_MENU_CODE.locale_it,
+    icon: 'IT',
+    textAsIcon: true,
+    text: 'Passa ad altra lingua',
+    logic: 'system',
   }
 }
 
 export const DAY: any = {
-  0: 'domenica',
-  1: 'lunedì',
-  2: 'martedì',
-  3: 'mercoledì',
-  4: 'goivedì',
-  5: 'venerdì',
-  6: 'sabato',
+  0: 'sunday',
+  1: 'monday',
+  2: 'tuesday',
+  3: 'wednesday',
+  4: 'thursday',
+  5: 'friday',
+  6: 'saturday',
 }
-
 export const MONTH: any = {
-  0: 'gennaio',
-  1: 'febbraio',
-  2: 'marzo',
-  3: 'aprile',
-  4: 'maggio',
-  5: 'giugno',
-  6: 'luglio',
-  7: 'agosto',
-  8: 'settembre',
-  9: 'ottobre',
-  10: 'novembre',
-  11: 'dicembre',
+  0: 'january',
+  1: 'february',
+  2: 'march',
+  3: 'april',
+  4: 'may',
+  5: 'june',
+  6: 'july',
+  7: 'august',
+  8: 'september',
+  9: 'october',
+  10: 'november',
+  11: 'december',
 }
-
-export const WEEK_DAYS = [
-  { num:1, label: 'Lunedì', small: 'L' },
-  { num:2, label: 'Martedì', small: 'M' },
-  { num:3, label: 'Mercoledì', small: 'M' },
-  { num:4, label: 'Giovedì', small: 'G' },
-  { num:5, label: 'Venerdì', small: 'V' },
-  { num:6, label: 'Sabato', small: 'S' },
-  { num:0, label: 'Domenica', small: 'D' },
-]
-
-export const PAGE_CODE: any = {
-  shuttle: 'shuttle',
-  settings: 'settings'
-}
-
-export const PAGES: Page[] = [{
-  code: PAGE_CODE.shuttle,
-  icon: 'airport_shuttle',
-  title: 'Shuttle'
-}, {
-  code: PAGE_CODE.settings,
-  icon: 'settings',
-  title: 'Settings'
-}]

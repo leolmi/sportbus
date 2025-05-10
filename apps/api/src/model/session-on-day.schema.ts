@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { Person } from './common.schema';
 
 
 
@@ -31,15 +32,15 @@ class Shuttle extends Document {
   @Prop()
   driver: string;
   /**
-   * athletes
+   * passengers
    */
   @Prop([String])
-  athletes: string[];
+  passengers: string[];
   /**
-   * mappa degli orari per atleta
+   * mappa degli orari per passeggero
    */
   @Prop({ type: Object })
-  athletesTimesMap: any;
+  passengersTimesMap: any;
 }
 
 
@@ -61,10 +62,15 @@ class SessionOnDay extends Document {
   @Prop({ required: true })
   session: string;
   /**
-   * mappa degli atleti presenti
+   * Persons
+   */
+  @Prop()
+  persons: Person[];
+  /**
+   * mappa dei passeggeri presenti
    */
   @Prop({ type: Object })
-  athletes: any;
+  passengersMap: any;
   /**
    * session
    */

@@ -1,147 +1,194 @@
+<div class="session-header"
+     fxLayout="row" fxLayoutAlign="start center">
+  <button mat-icon-button (click)="back()">
+    <mat-icon>arrow_back_ios</mat-icon>
+  </button>
+  <span class="margin-left" spb-i18n>back</span>
+  <div fxFlex></div>
+  <essential-toolbar></essential-toolbar>
+</div>
 <div class="page-editor settings">
   @if (manager.session$|async; as ses) {
-    <mat-form-field
-      appearance="outline"
-      class="full-width margin-bottom-20"
-    >
-      <mat-label>Name</mat-label>
-      <input matInput
-             [value]="ses.name||''"
-             (change)="manager.updateValue($event,'name','target.value')"
-             placeholder="session name">
-      <button
-        mat-icon-button
-        matSuffix
-        (click)="share()"
-        [attr.aria-label]="'Share session'"
-      >
-        <mat-icon>share</mat-icon>
-      </button>
-      <button
-        mat-icon-button
-        matSuffix
-        (click)="manager.close()"
-        [attr.aria-label]="'Close this session'"
-      >
-        <mat-icon>logout</mat-icon>
-      </button>
-    </mat-form-field>
-    <mat-accordion multi>
-      <!-- GROUPS -->
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title> Groups </mat-panel-title>
-          <mat-panel-description>
-            Groups of athletes
-            <div class="row-tail" fxLayout="row" fxLayoutAlign="start center">
-              <div class="spb-basic-badge">{{groupsCount$|async}}</div>
-              <mat-icon>category</mat-icon>
-            </div>
-          </mat-panel-description>
-        </mat-expansion-panel-header>
 
-        <div class="panel-toolbar" fxLayout="row" fxLayoutAlign="end center">
-          <button mat-icon-button (click)="addGroup()">
-            <mat-icon>add</mat-icon>
-          </button>
-        </div>
-        @for (grp of ses.groups; track $index) {
-          <div class="panel-item" fxLayout="row" fxLayoutAlign="start center">
-            <input type="text"
-                   class="spb-basic-input"
-                   [value]="grp.name"
-                   (change)="updateGroup($event, grp)" fxFlex>
+    <div class="settings-section"
+         fxLayout="row" fxLayoutAlign="space-around center">
+      <label class="session-code font-size-big click-content spb-color-accent"
+             (click)="manager.share()">{{manager.session?.code}}</label>
+    </div>
+
+    <!-- COMMANDS -->
+    <div class="settings-section"
+         fxLayout="row" fxLayoutAlign="space-around center">
+      <button mat-flat-button
+              class="margin-horz"
+              (click)="manager.share()">
+        <mat-icon class="compact-hidden">share</mat-icon>
+        <span spb-i18n>Share this session</span>
+      </button>
+      <button mat-flat-button
+              class="margin-horz"
+              (click)="manager.close()">
+        <mat-icon class="compact-hidden">logout</mat-icon>
+        <span spb-i18n>Close this session</span>
+      </button>
+    </div>
+
+    <!-- GROUPS -->
+    <div class="settings-section">
+      <div class="settings-section-title" fxLayout="row" fxLayoutAlign="start center">
+        <mat-icon class="margin-right">category</mat-icon>
+        <span fxFlex spb-i18n>Groups</span>
+        <button mat-icon-button (click)="addGroup()">
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+      @for (grp of ses.groups; track $index) {
+        <div class="panel-item" fxLayout="row" fxLayoutAlign="start center">
+          <label class="label-strong" fxFlex>{{grp.name}}</label>
+          <div class="panel-item-actions" fxLayout="row" fxLayoutAlign="start center">
+            <button mat-icon-button (click)="editGroup(grp)">
+              <mat-icon>edit</mat-icon>
+            </button>
             <button mat-icon-button (click)="deleteGroup(grp)">
               <mat-icon>delete</mat-icon>
             </button>
           </div>
-        }
-      </mat-expansion-panel>
+        </div>
+      }
+    </div>
 
-      <!-- PERSONS -->
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title> Persons </mat-panel-title>
-          <mat-panel-description>
-            Athletes & Drivers
-            <div class="row-tail" fxLayout="row" fxLayoutAlign="start center">
-              <div class="spb-basic-badge">{{personsCount$|async}}</div>
-              <mat-icon>groups</mat-icon>
-            </div>
-          </mat-panel-description>
-        </mat-expansion-panel-header>
-
-        <div class="panel-toolbar" fxLayout="row" fxLayoutAlign="end center">
-          <button mat-icon-button (click)="addPerson()">
-            <mat-icon>add</mat-icon>
+    <!-- CALENDAR -->
+    <div class="settings-section">
+      <div class="settings-section-title" fxLayout="row" fxLayoutAlign="start center">
+        <mat-icon class="margin-right">event_note</mat-icon>
+        <span fxFlex spb-i18n>Calendar</span>
+        @if (clipboard$|async) {
+          <button mat-icon-button
+                  (click)="clearClipboard()"
+                  [matTooltip]="KEYS._day_clear_clipboard|i18n"
+                  class="spb-color-accent">
+            <mat-icon>content_paste_off</mat-icon>
           </button>
-        </div>
-        <div class="panel-header" fxLayout="row" fxLayoutAlign="end center">
-          <div fxFlex></div>
-          <div class="header-group">Group</div>
-          <div class="header-type">Type</div>
-          <div class="header-icon"></div>
-        </div>
-        @for (prs of (ses.persons||[]); track $index) {
-          <div class="panel-item" fxLayout="row" fxLayoutAlign="start center">
-            <input type="text"
-                   class="spb-basic-input"
-                   [value]="prs.name"
-                   (change)="updatePerson($event, prs, 'name')" fxFlex>
-            @if (prs.type==='athlete') {
-              <select class="spb-basic-input group"
-                      [ngModel]="prs.group"
-                      (change)="updatePerson($event, prs, 'group')">
-                @for (grp of (ses.groups||[]); track $index) {
-                  <option [ngValue]="grp.code">{{grp.name}}</option>
-                }
-              </select>
-            }
-            <select class="spb-basic-input type"
-                    [ngModel]="prs.type"
-                    (change)="updatePerson($event, prs, 'type')">
-              <option [ngValue]="'athlete'">Athlete</option>
-              <option [ngValue]="'driver'">Driver</option>
-            </select>
-            <button mat-icon-button (click)="deletePerson(prs)">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </div>
         }
-      </mat-expansion-panel>
-
-      <!-- CALENDAR -->
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title> Calendar </mat-panel-title>
-          <mat-panel-description>
-            Calendar of activities
-            <div class="row-tail" fxLayout="row" fxLayoutAlign="start center">
-              <div class="spb-basic-badge">{{calendarCount$|async}}</div>
-              <mat-icon>event_note</mat-icon>
-            </div>
-          </mat-panel-description>
-        </mat-expansion-panel-header>
-
-        <div class="panel-header" fxLayout="row" fxLayoutAlign="end center">
-          <div class="header-day"></div>
-          @for (grp of ses.groups; track $index) {
-            <div class="header-group-name" fxFlex>{{grp.name}}</div>
-          }
-        </div>
+      </div>
+      @for (grp of ses.groups; track $index) {
+        <div class="panel-item group-title">{{grp.name}}</div>
         @for (day of weekDays; track $index) {
-          <div class="panel-item" fxLayout="row" fxLayoutAlign="start center">
-            <div class="field-day">{{day.small}}</div>
-            @for (grp of ses.groups; track $index) {
-              <input type="text"
-                     class="spb-basic-input"
-                     fxFlex
-                     [value]="(((calendarMap$|async)||{})[day.num]||{})[grp.code]||''"
-                     (change)="updateCalendarItem($event, day.num , grp.code)">
-            }
+          <div class="panel-item day-item"
+               [class.on-clipboard]="(clipboard$|async)?.dayOfWeek === day.num && (clipboard$|async)?.group === grp.code"
+               fxLayout="row" fxLayoutAlign="start center">
+            <label fxFlex fxLayout="row" fxLayoutAlign="start center">
+              <span class="label-strong day-name margin-right-2">{{day.label}}</span>
+              @if ((((calendarMap$|async)||{})[day.num]||{})[grp.code]; as item) {
+                <span class="day-times">{{item|dayTimes}}</span>
+                <span class="day-destination" fxFlex>{{item.target}}</span>
+              }
+            </label>
+            <div class="panel-item-actions" fxLayout="row" fxLayoutAlign="start center">
+              @if (state.layout$|async; as layout) {
+                @if (layout.compact) {
+                  <button mat-icon-button
+                          #menuTrigger="matMenuTrigger"
+                          [matMenuTriggerFor]="dayActionsMenu"
+                          (click)="menuTrigger.openMenu()">
+                    <mat-icon>more_vert</mat-icon>
+                  </button>
+                  <mat-menu #dayActionsMenu="matMenu">
+                    @if ((clipboard$|async)?.dayOfWeek === day.num && (clipboard$|async)?.group === grp.code) {
+                      <button mat-menu-item (click)="clearClipboard()" class="spb-color-accent">
+                        <mat-icon>content_paste_off</mat-icon>
+                        <span spb-i18n>{{KEYS._day_clear_clipboard}}</span>
+                      </button>
+                    } @else if (clipboard$|async) {
+                      <button mat-menu-item (click)="pasteDay(grp, day)">
+                        <mat-icon>content_paste</mat-icon>
+                        <span spb-i18n>{{KEYS._day_paste}}</span>
+                      </button>
+                    } @else {
+                      <button mat-menu-item (click)="copyDay(grp, day)">
+                        <mat-icon>content_copy</mat-icon>
+                        <span spb-i18n>{{KEYS._day_copy}}</span>
+                      </button>
+                    }
+                    <button mat-menu-item (click)="editDay(grp, day)">
+                      <mat-icon>edit</mat-icon>
+                      <span spb-i18n>{{KEYS._day_edit}}</span>
+                    </button>
+                    <button mat-menu-item (click)="clearDay(grp, day)">
+                      <mat-icon>cancel</mat-icon>
+                      <span spb-i18n>{{KEYS._day_clear}}</span>
+                    </button>
+                  </mat-menu>
+                } @else {
+                  @if ((clipboard$|async)?.dayOfWeek === day.num && (clipboard$|async)?.group === grp.code) {
+                    <button mat-icon-button
+                            [matTooltip]="KEYS._day_clear_clipboard|i18n"
+                            (click)="clearClipboard()"
+                            class="spb-color-accent">
+                      <mat-icon>content_paste_off</mat-icon>
+                    </button>
+                  } @else if (clipboard$|async) {
+                    <button mat-icon-button
+                            [matTooltip]="KEYS._day_paste|i18n"
+                            (click)="pasteDay(grp, day)">
+                      <mat-icon>content_paste</mat-icon>
+                    </button>
+                  } @else {
+                    <button mat-icon-button
+                            [matTooltip]="KEYS._day_copy|i18n"
+                            (click)="copyDay(grp, day)">
+                      <mat-icon>content_copy</mat-icon>
+                    </button>
+                  }
+                  <button mat-icon-button
+                          [matTooltip]="KEYS._day_edit|i18n"
+                          (click)="editDay(grp, day)">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button
+                          [matTooltip]="KEYS._day_clear|i18n"
+                          (click)="clearDay(grp, day)">
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                }
+              }
+            </div>
           </div>
         }
-      </mat-expansion-panel>
-    </mat-accordion>
+      }
+    </div>
+
+    <!-- PERSONS -->
+    <div class="settings-section">
+      <div class="settings-section-title" fxLayout="row" fxLayoutAlign="start center">
+        <mat-icon class="margin-right">groups</mat-icon>
+        <span fxFlex spb-i18n>Persons</span>
+        <button mat-icon-button (click)="addPerson()">
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+
+      @for (pgrp of personsGroups$|async; track $index) {
+        @if ((pgrp.persons||[]).length>0) {
+          <div class="panel-item group-title" spb-i18n>{{pgrp.title}}</div>
+          @for (prs of (pgrp.persons||[]); track $index) {
+            <div class="panel-item" fxLayout="row" fxLayoutAlign="start center">
+              <label fxFlex fxLayout="row" fxLayoutAlign="start center">
+                <span class="label-strong" fxFlex>{{prs.name}}</span>
+                <span class="person-details">{{prs|personDetails:manager.session}}</span>
+              </label>
+              <button mat-icon-button (click)="editPerson(prs)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button (click)="deletePerson(prs)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          }
+        }
+      }
+
+    </div>
+
   }
 </div>

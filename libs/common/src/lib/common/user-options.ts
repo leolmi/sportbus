@@ -1,9 +1,13 @@
-import { BUS_PREFIX, SPORTBUS_APP_USER_OPTIONS_KEY } from '@olmi/model';
+import { BUS_PREFIX, SPORTBUS_APP_USER_OPTIONS_KEY, SPORTBUS_USER_OPTIONS_FEATURE } from '@olmi/model';
+import { BehaviorSubject } from 'rxjs';
+import { isBoolean as _isBoolean, isString as _isString } from 'lodash';
 
 export class AppUserOptions {
+  static firstAccess$: BehaviorSubject<boolean|undefined> = new BehaviorSubject<boolean | undefined>(undefined);
 
   private static getOptions = () => {
     const o = localStorage.getItem(SPORTBUS_APP_USER_OPTIONS_KEY);
+    if (!_isBoolean(this.firstAccess$.value)) this.firstAccess$.next(!_isString(o));
     try {
       return <any>JSON.parse(o || '{}') || {};
     } catch (err) {
@@ -28,3 +32,6 @@ export class AppUserOptions {
     location.reload();
   }
 }
+
+export const getManagementKey = (): string =>
+  AppUserOptions.getFeatures(SPORTBUS_USER_OPTIONS_FEATURE, { managementKey: '' }).managementKey||'';

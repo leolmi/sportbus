@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FlexModule } from '@angular/flex-layout';
-import { EditorBase } from '@olmi/components';
+import { EditorBase } from '../editor.base';
 
 @Component({
   selector: 'daily-chat',

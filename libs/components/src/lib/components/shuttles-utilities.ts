@@ -17,24 +17,29 @@ export class CalendarItemWrapper {
   group: string = '';
 }
 
+/**
+ * vero se è un passeggero
+ * @param p
+ */
+export const isPassenger = (p: Person): boolean => !p.isDriver || !!p.group;
 
 /**
- * restituisce l'elenco degli atleti presenti
+ * restituisce l'elenco dei passeggeri presenti
  * @param ses
  * @param sod
  */
-export const getActiveAthletes = (ses?: Session, sod?: SessionOnDay): Person[] =>
-  (ses?.persons||[]).filter(p => p.type === 'athlete' && !!(<any>sod?.athletes || {})[p.code]);
+export const getActivePassengers = (ses?: Session, sod?: SessionOnDay): Person[] =>
+  (ses?.persons||[]).filter(p => isPassenger(p) && !!(<any>sod?.passengersMap || {})[p.code]);
 
 
 /**
- * restituisce tutti gli atleti inseriti nella direzione
+ * restituisce tutti i passeggeri inseriti nella direzione
  * @param sod
  * @param direction
  */
-export const getDirectionAthleteCodes = (sod?: SessionOnDay, direction: ShuttleDirection = 'A') => {
+export const getDirectionPassengerCodes = (sod?: SessionOnDay, direction: ShuttleDirection = 'A') => {
   const dshs = (sod?.shuttles||[]).filter(s => s.direction === direction);
-  return _flatten(dshs.map(s => s.athletes));
+  return _flatten(dshs.map(s => s.passengers));
 }
 
 /**
@@ -43,10 +48,10 @@ export const getDirectionAthleteCodes = (sod?: SessionOnDay, direction: ShuttleD
  * @param sod
  * @param direction
  */
-export const getMissingAthletes = (ses: Session|undefined, sod: SessionOnDay|undefined, direction: ShuttleDirection): Person[] => {
-  const aas = getActiveAthletes(ses, sod);
-  const das = getDirectionAthleteCodes(sod, direction);
-  return aas.filter(a => !das.includes(a.code));
+export const getMissingPassengers = (ses: Session|undefined, sod: SessionOnDay|undefined, direction: ShuttleDirection): Person[] => {
+  const aps = getActivePassengers(ses, sod);
+  const dps = getDirectionPassengerCodes(sod, direction);
+  return aps.filter(a => !dps.includes(a.code));
 }
 
 /**
@@ -82,23 +87,20 @@ export const withShuttle = (sod: SessionOnDay, shuttle: Shuttle|undefined, handl
  * @param sod
  * @param prs
  * @param shuttle
+ * @param asDriver
  */
-export const addShuttlePerson = (sod: SessionOnDay, prs: Person, shuttle: Shuttle|undefined): boolean => {
+export const addShuttlePerson = (sod: SessionOnDay, prs: Person, shuttle: Shuttle|undefined, asDriver: boolean): boolean => {
   return withShuttle(sod, shuttle, (s) => {
-    switch (prs.type) {
-      case 'driver':
-        if (s.driver !== prs.code) {
-          s.driver = prs.code;
-          return true;
-        }
-        break;
-      case 'athlete':
-      default:
-        if (!s.athletes.includes(prs.code)) {
-          s.athletes.push(prs.code);
-          return true;
-        }
-        break;
+    if (asDriver) {
+      if (s.driver !== prs.code) {
+        s.driver = prs.code;
+        return true;
+      }
+    } else {
+      if (!s.passengers.includes(prs.code)) {
+        s.passengers.push(prs.code);
+        return true;
+      }
     }
     return false;
   })
@@ -107,17 +109,15 @@ export const addShuttlePerson = (sod: SessionOnDay, prs: Person, shuttle: Shuttl
 /**
  * restituisce l'elenco delle persone per tipo
  * @param ses
- * @param type
+ * @param driver
  * @param sod
  * @param sht
  */
-export const getPersons = (ses: Session|undefined, type: string, sod: SessionOnDay, sht: Shuttle|undefined): Person[] => {
-  switch (type) {
-    case 'driver':
-      return (ses?.persons||[]).filter(p => p.type === type);
-    case 'athlete':
-    default:
-      return getMissingAthletes(ses, sod, sht?.direction||'A');
+export const getPersons = (ses: Session|undefined, driver: boolean, sod: SessionOnDay, sht: Shuttle|undefined): Person[] => {
+  if (driver) {
+    return (ses?.persons||[]).filter(p => p.isDriver);
+  } else {
+    return getMissingPassengers(ses, sod, sht?.direction||'A');
   }
 }
 
@@ -125,31 +125,35 @@ export const getPersonName = (session: Session|undefined, pcode?: string): strin
   return (session?.persons || []).find(p => p.code === pcode||'')?.name || pcode || '';
 }
 
+export const getPersonIcon = (prs?: Person): string => {
+  return prs?.isDriver ? 'sports_motorsports' : (prs ? 'person' : 'person_outline');
+}
+
 export const getGroupName = (session: Session|undefined, gcode?: string): string => {
   return (session?.groups || []).find(g => g.code === gcode||'')?.name || gcode || '';
 }
 
 const isDirectionPresent = (sod: SessionOnDay|undefined, acode: string, direction: ShuttleDirection): boolean =>
-  !!(sod?.shuttles||[]).find(s => s.athletes.includes(acode) && s.direction === direction);
+  !!(sod?.shuttles||[]).find(s => s.passengers.includes(acode) && s.direction === direction);
 
-export const getAthletesMap = (sod: SessionOnDay|undefined): any => {
-  return _reduce(sod?.athletes||{}, (m, p, n) => {
+export const getPassengersMap = (sod: SessionOnDay|undefined): any => {
+  return _reduce(sod?.passengersMap||{}, (m, p, n) => {
     const ready = isDirectionPresent(sod, n, 'A') && isDirectionPresent(sod, n, 'R');
     return { ...m, [n]: ready?'r':(p?'p':'a') };
   }, <any>{});
 }
 
-export const getCalendarItemsWrappers = (items: CalendarItem[], session: Session|undefined): CalendarItemWrapper[] => {
-  return items.map(i => {
-    const g = (session?.groups||[]).find(sg => sg.code === i.group);
-    return <CalendarItemWrapper>{
-      group: g?.name||'',
-      start: getTimeString(i.start),
-      end: getTimeString(i.end),
-      target: i.target
-    }
-  })
-}
+// export const getCalendarItemsWrappers = (items: CalendarItem[], session: Session|undefined): CalendarItemWrapper[] => {
+//   return items.map(i => {
+//     const g = (session?.groups||[]).find(sg => sg.code === i.group);
+//     return <CalendarItemWrapper>{
+//       group: g?.name||'',
+//       start: getTimeString(i.start),
+//       end: getTimeString(i.end),
+//       target: i.target
+//     }
+//   })
+// }
 
 const getShuttleCode = (time: number, direction: ShuttleDirection, target: string): string => `${direction}${time}@${target}`;
 
@@ -165,13 +169,13 @@ const calcShuttlesMap = (items: CalendarItem[]): {[code: string]: Partial<Shuttl
 }
 
 
-// const _addMissingAthletes = (m: any, ses: Session, sod: SessionOnDay, items: CalendarItem[], direction: ShuttleDirection) => {
+// const _addMissingPassengers = (m: any, ses: Session, sod: SessionOnDay, items: CalendarItem[], direction: ShuttleDirection) => {
 //   const defGroup = ses.groups[0];
 //   // navette già presenti nella direzione considerata
 //   const xShuttles = sod.shuttles.filter(s => s.direction===direction);
 //
 //
-//   getMissingAthletes(ses, sod, direction).forEach(a => {
+//   getMissingPassengers(ses, sod, direction).forEach(a => {
 //     const item = items.find(i => i.group === (a.group || defGroup?.code || ''));
 //     const time = (direction==='A') ? item?.start : item?.end;
 //     const code = getShuttleCode(time || 0, direction, item?.target || '');
@@ -182,10 +186,10 @@ const calcShuttlesMap = (items: CalendarItem[]): {[code: string]: Partial<Shuttl
 /**
  * calcola la mappa dei codici navetta per utente
  */
-const calcShuttlesAthletesMap = (ses: Session, sod: SessionOnDay, items: CalendarItem[]): any => {
+const calcShuttlesPassengersMap = (ses: Session, sod: SessionOnDay, items: CalendarItem[]): any => {
   const defGroup = ses.groups[0];
-  const athletes = getActiveAthletes(ses, sod);
-  return _reduce(athletes, (m, a) => {
+  const passengers = getActivePassengers(ses, sod);
+  return _reduce(passengers, (m, a) => {
     // item di calendario competente per l'atleta
     const item = items.find(i => i.group === (a.group||defGroup?.code||''));
     const codeA = getShuttleCode(item?.start||0, 'A', item?.target||'');
@@ -198,10 +202,10 @@ const calcShuttlesAthletesMap = (ses: Session, sod: SessionOnDay, items: Calenda
   }, <any>{});
 }
 
-const getEffectiveAthletes = (athletesMap: any, code: string, ses: Session, sod: SessionOnDay): string[] => {
+const getEffectivePassengers = (passengersMap: any, code: string, ses: Session, sod: SessionOnDay): string[] => {
   const direction = <ShuttleDirection>code.charAt(0);
-  const missa = getMissingAthletes(ses, sod, direction).map(a => a.code);
-  const routea: string[] = athletesMap[code]||[];
+  const missa = getMissingPassengers(ses, sod, direction).map(a => a.code);
+  const routea: string[] = passengersMap[code]||[];
   return routea.filter(a => missa.includes(a));
 }
 
@@ -226,13 +230,13 @@ export const calcShuttles = (ses: Session|undefined, sod: SessionOnDay|undefined
 
   // mappa dei codici navetta per atleta
   // { codice: [atl1, ..., atlN] }
-  const athletesMap = calcShuttlesAthletesMap(ses, sod, items);
-  // console.log('ATHLETES MAP', athletesMap);
+  const passengersMap = calcShuttlesPassengersMap(ses, sod, items);
+  // console.log('PASSENGERS MAP', passengersMap);
 
   const shuttles: Partial<Shuttle>[] = [];
   // sviluppo degli incastri navette sui tempi - navette sugli atleti
-  _keys(athletesMap).forEach(code => {
-    const eff_atls = getEffectiveAthletes(athletesMap, code, ses, sod);
+  _keys(passengersMap).forEach(code => {
+    const eff_atls = getEffectivePassengers(passengersMap, code, ses, sod);
     // numero di atleti che necessitano della tratta
     const achunks: string[][] = _chunk(eff_atls, 4);
     achunks.forEach((c, i) => {
@@ -244,7 +248,7 @@ export const calcShuttles = (ses: Session|undefined, sod: SessionOnDay|undefined
         exsh = <Partial<Shuttle>>{ ...base, code: shCode, _temporary: true };
         shuttles.push(exsh);
       }
-      exsh.athletes = [];
+      exsh.passengers = [];
     });
   });
 

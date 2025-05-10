@@ -1,0 +1,33 @@
+.info-dialog-content {
+  min-width: 320px;
+}
+
+.help-area,
+.info-area {
+  font-size: 1.3em;
+}
+
+.info-area {
+  padding: calc(var(--spb-padding) * 2);
+  margin-bottom: var(--spb-padding);
+
+  .mat-icon {
+    min-width: 2em;
+  }
+
+  .info-area-content {
+
+  }
+}
+
+.help-area {
+  .help-title {
+    font-size: 2.4em;
+    line-height: 1;
+    padding: var(--spb-padding);
+  }
+
+  .help-line {
+    margin-bottom: var(--spb-padding);
+  }
+}

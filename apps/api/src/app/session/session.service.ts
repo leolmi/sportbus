@@ -1,9 +1,10 @@
-import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
+import { Inject, Injectable, OnModuleInit, UseGuards } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { SessionDoc, SessionOnDayDoc } from '../../model';
 import { environment } from '../../environments/environment';
-import { BUS_PREFIX, checkNumber, guid, Session, SessionOnDay } from '@olmi/model';
+import { BUS_PREFIX, checkNumber, Group, guid, sanitizeCode, Session, SessionOnDay } from '@olmi/model';
 import { cloneDeep } from 'lodash';
+import { AuthGuard } from '../app.guards';
 
 
 @Injectable()
@@ -39,6 +40,7 @@ export class SessionService implements OnModuleInit {
       _id: code,
       code,
       name: 'New Session',
+      groups: [new Group({ name: 'Default' })]
     });
     try {
       result = await this.sessionModel.create(session);
@@ -89,7 +91,7 @@ export class SessionService implements OnModuleInit {
   /**
    * elimina le sessioni scadute
    */
-  async checkExpired(): Promise<any> {
+  private async _checkExpired(): Promise<any> {
     const duration = checkNumber(environment.sessionDurationDays, 30, 300);
     const horizon = Date.now() - (duration * (24 * 60 * 60 * 1000));
     const resp: any = { expired: 0, warnings: 0 };
@@ -107,7 +109,7 @@ export class SessionService implements OnModuleInit {
     return resp;
   }
 
-  async deleteDeprecatedSessionOnDays(): Promise<boolean> {
+  private async _deleteDeprecatedSessionOnDays(): Promise<boolean> {
     try {
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
@@ -120,6 +122,7 @@ export class SessionService implements OnModuleInit {
     return false;
   }
 
+
   async deleteAll(): Promise<boolean> {
     try {
       await this.sessionModel.deleteMany().exec();
@@ -131,19 +134,33 @@ export class SessionService implements OnModuleInit {
     return false;
   }
 
-  async deleteAllSessionOnDays(): Promise<boolean> {
+  async deleteAllSessionOnDays(): Promise<any> {
     try {
-      await this.sessionOnDayModel.deleteMany().exec();
-      return true;
+      return await this.sessionOnDayModel.deleteMany().exec();
     } catch (err) {
       console.error(`error while deleting all sessions-on-day`, err);
     }
     return false;
   }
 
-  onModuleInit(): any {
-    this.deleteDeprecatedSessionOnDays();
+  async deleteSessionOnDays(session: string): Promise<any> {
+    if (!session) return false;
+    try {
+      return await this.sessionOnDayModel.deleteMany({ session }).exec();
+    } catch (err) {
+      console.error(`error while deleting all sessions-on-day`, err);
+    }
+    return false;
+  }
+
+  async getAllSessions(): Promise<SessionDoc[]> {
+    return this.sessionModel.find().exec();
+  }
+
+  async onModuleInit() {
+    const result = await this._checkExpired();
+    console.log('check expired result', result);
+
+    await this._deleteDeprecatedSessionOnDays();
   }
 }
-
-const sanitizeCode = (v: string): string => `${v||''}`.toUpperCase();

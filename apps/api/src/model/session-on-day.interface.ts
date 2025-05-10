@@ -6,5 +6,6 @@ export interface SessionOnDayDoc extends Document {
   readonly date: number;
   readonly session: string;
   readonly shuttles: Shuttle[];
-  readonly athletes: any;
+  readonly persons: Person[];
+  readonly passengersMap: any;
 }

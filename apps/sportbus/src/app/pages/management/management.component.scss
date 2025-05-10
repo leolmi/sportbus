@@ -5,11 +5,54 @@
   }
 }
 
+.main-toolbar {
+  position: absolute;
+  top: var(--spb-padding);
+  left: 0;
+  width: 100%;
+  padding: 0 calc(2 * var(--spb-padding));
+}
 
 .management-section {
-  padding: 20px 0;
+  padding: calc(2 * var(--spb-padding));
 
   .management-row {
-    padding: 20px 0;
+    padding: var(--spb-padding);
   }
+
+  .management-detail-row {
+    padding: 0 var(--spb-padding);
+  }
+
+  .row-num {
+    opacity: .5;
+    width: 32px;
+  }
+
+  .row-main {
+    min-width: calc(20 * var(--spb-padding));
+  }
+  .row-detail {
+    opacity: .5;
+    padding: 0 var(--spb-padding);
+    min-width: calc(12 * var(--spb-padding));
+  }
+
+  .management-section-title {
+    font-size: 1.5em;
+    padding: calc(2 * var(--spb-padding));
+  }
+
+  .search-row {
+    .as-button {
+      position: absolute;
+      right: calc(4 * var(--spb-padding));
+      opacity: .6;
+    }
+  }
+}
+
+.management-key-input {
+  max-width: 320px;
+  margin-top: 10vh;
 }

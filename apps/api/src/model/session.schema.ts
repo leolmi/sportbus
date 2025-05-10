@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { Person } from './common.schema';
 
 @Schema()
 class Group extends Document {
@@ -13,31 +14,6 @@ class Group extends Document {
    */
   @Prop()
   name: string;
-}
-
-
-@Schema()
-class Person extends Document {
-  /**
-   * code
-   */
-  @Prop({ required: true })
-  code: string;
-  /**
-   * nome
-   */
-  @Prop()
-  name: string;
-  /**
-   * type
-   */
-  @Prop()
-  type: string;
-  /**
-   * group
-   */
-  @Prop()
-  group: string;
 }
 
 @Schema()

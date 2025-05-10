@@ -11,6 +11,7 @@ export class MenuItem {
   routeActive?: boolean;
   code?: string;
   icon?: string;
+  textAsIcon?: boolean;
   text?: string;
   logic?: 'toggle'|'switch'|'navigate'|'execute'|'private'|'system';
   property?: string;

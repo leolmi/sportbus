@@ -1,0 +1,11 @@
+<div class="calendar">
+  @for (item of manager.dayCalendarItems$|async; track $index) {
+    <div class="calendar-item"
+         fxLayout="row" fxLayoutAlign="start center">
+      <span class="item-group" fxFlex>{{item.group|groupName:manager.session}}</span>
+      <span class="item-target" fxFlex>{{item.target}}</span>
+      <span class="item-time item-start">{{item.start|timeToString}}</span>
+      <span class="item-time item-end">{{item.end|timeToString}}</span>
+    </div>
+  }
+</div>

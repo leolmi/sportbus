@@ -11,8 +11,8 @@ export class Shuttle {
     this.time = s?.time || 0;
     this.target = s?.target || '';
     this.driver = s?.driver || '';
-    this.athletes = s?.athletes || [];
-    this.athletesTimesMap = s?.athletesTimesMap || {};
+    this.passengers = s?.passengers || [];
+    this.passengersTimesMap = s?.passengersTimesMap || {};
     this._temporary = !!s?._temporary;
   }
 
@@ -39,11 +39,11 @@ export class Shuttle {
   /**
    * identificativi atleti
    */
-  athletes: string[];
+  passengers: string[];
   /**
    * mappa degli orari per atleta
    */
-  athletesTimesMap: Dictionary<number>;
+  passengersTimesMap: Dictionary<number>;
   /**
    * temporanea
    */

@@ -1,4 +1,5 @@
 export * from './lib/common/app.state';
+export * from './lib/common/i18n';
 export * from './lib/common/interaction';
 export * from './lib/common/notifier';
 export * from './lib/common/session-manager';

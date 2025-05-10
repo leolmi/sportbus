@@ -1,47 +1,33 @@
 import { ChangeDetectionStrategy, Component, inject, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FlexModule } from '@angular/flex-layout';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterOutlet } from '@angular/router';
 import {
-  BUS_PREFIX, getDayNumber,
+  BUS_PREFIX,
+  getDayNumber,
   LocalContext,
+  MenuItem,
   NotificationType,
-  Session, SessionOnDay,
+  Session,
+  SessionOnDay,
   SPORTBUS_SESSION_POLLING_TIMEOUT,
-  SPORTBUS_USER_OPTIONS_FEATURE, updateIfChanged
+  SPORTBUS_USER_OPTIONS_FEATURE
 } from '@olmi/model';
 import { BehaviorSubject, catchError, combineLatest, distinctUntilChanged, filter, of, take } from 'rxjs';
-import { AppUserOptions, SPORTBUS_API, SPORTBUS_MANAGER } from '@olmi/common';
+import { AppUserOptions, I18nDirective } from '@olmi/common';
 import { FALLBACK_PAGE_ROUTE } from '../default.routes';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import {
-  EditorBase,
-  FooterToolbarComponent,
-  SessionEditorComponent,
-  SessionHeaderComponent,
-  SettingsEditorComponent
-} from '@olmi/components';
+import { EditorBase } from '@olmi/components';
 import { MAT_DATE_LOCALE } from '@angular/material/core';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatInputModule } from '@angular/material/input';
+import { MENU_CODE } from './session.menu';
 
 @Component({
   imports: [
     CommonModule,
     FlexModule,
-    SessionHeaderComponent,
-    FooterToolbarComponent,
     MatProgressBarModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatButtonModule,
-    MatTooltipModule,
-    MatInputModule,
-    SettingsEditorComponent,
-    SessionEditorComponent
+    I18nDirective,
+    RouterOutlet
   ],
   selector: 'sportbus-session',
   templateUrl: './session.component.html',
@@ -59,6 +45,7 @@ export class SessionComponent extends EditorBase implements OnDestroy {
 
   constructor() {
     super();
+    this.handleMenu = true;
     this.opening$ = new BehaviorSubject<boolean>(true);
     const o = AppUserOptions.getFeatures<any>(SPORTBUS_USER_OPTIONS_FEATURE);
     LocalContext.onLevel('debug').do(() =>
@@ -82,6 +69,8 @@ export class SessionComponent extends EditorBase implements OnDestroy {
     combineLatest([this.code$, this.manager.date$])
       .pipe(distinctUntilChanged(([c1, d1], [c2, d2]) => c1 === c2))
       .subscribe(() => this._refreshSessionOnDay());
+
+    this.state.menuHandler = (item) => this._handlePrivateMenu(item);
   }
 
   private _fallBack(message?: string, type = NotificationType.error) {
@@ -94,6 +83,18 @@ export class SessionComponent extends EditorBase implements OnDestroy {
     if (this._timeout) clearTimeout(this._timeout);
     const timeout = this.state.info.pollingTimeout || SPORTBUS_SESSION_POLLING_TIMEOUT;
     if (handler) this._timeout = setTimeout(handler, timeout);
+  }
+
+  private _handlePrivateMenu(item: MenuItem) {
+    switch (item.code) {
+      case MENU_CODE.share:
+        this.manager.share();
+        break;
+      case MENU_CODE.settings:
+        this.state.openSettingsEditor(this.code$.value);
+        this.state.info
+        break;
+    }
   }
 
   private _refreshSession(first = false) {
@@ -139,10 +140,6 @@ export class SessionComponent extends EditorBase implements OnDestroy {
     this._resetTimeout();
     this._fallBack();
     this.manager.close();
-  }
-
-  share() {
-
   }
 
   onchange(e: any) {

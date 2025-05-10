@@ -5,16 +5,11 @@
 }
 
 .session-header {
-  font-size: 16px !important;
   &.today {
     .session-date-day-num {
       color: var(--spb-color-accent);
     }
   }
-}
-
-.navigation-panel {
-  padding: 0 20px;
 }
 
 .settings-icon {

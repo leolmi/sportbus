@@ -1,0 +1,29 @@
+<h2 mat-dialog-title>{{(options.title||DEFAULT_TITLE)|i18n}}</h2>
+<div class="info-dialog-content" mat-dialog-content>
+  @if (options.showWelcome || options.showHelp) {
+    <div class="help-area">
+      <div class="help-title">{{state.info.title}}</div>
+      @if (options.showWelcome) {
+        @for (line of WELCOME_LINES; track $index) {
+          <div class="help-line" [class.title]="!!line.isTitle">{{line.textKey|i18n}}</div>
+        }
+      }
+      @if (options.showHelp) {
+        @for (line of HELP_LINES; track $index) {
+          <div class="help-line" [class.title]="!!line.isTitle">{{line.textKey|i18n}}</div>
+        }
+      }
+      <div class="help-title">{{DEFAULT_TITLE|i18n}}</div>
+    </div>
+  }
+  @for (area of INFO_AREAS; track $index) {
+    <div class="info-area" fxLayout="row">
+      <mat-icon>{{ area.icon }}</mat-icon>
+      <div class="info-area-content">{{area.contentKey|i18n}}</div>
+    </div>
+  }
+</div>
+<mat-dialog-actions>
+  <div fxFlex></div>
+  <button mat-button mat-dialog-close>Ok</button>
+</mat-dialog-actions>

@@ -1,7 +1,8 @@
 import { inject, InjectionToken } from '@angular/core';
 import { combine, dayToString, Environment, Session, SessionOnDay } from '@olmi/model';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { getManagementKey } from './user-options';
 
 const API: any = {
   info: 'info',
@@ -9,7 +10,10 @@ const API: any = {
   create: 'create',
   sessionOnDay: 'session-on-day',
   delete: 'delete',
-  deleteAllSod: 'delete-all-sod'
+  deleteSod: 'delete-sod',
+  deleteAllSod: 'delete-all-sod',
+  sessions: 'sessions',
+  checkManagement: 'ping',
 }
 
 export class Interaction {
@@ -57,6 +61,19 @@ export class Interaction {
 
   deleteAllSod(): Observable<any> {
     return this.http.delete(this._url(API.deleteAllSod));
+  }
+
+  deleteSod(code: string): Observable<any> {
+    return this.http.delete(this._url(API.deleteSod, code));
+  }
+
+  getSessions(): Observable<Session[]> {
+    return this.http.get<Session[]>(this._url(API.sessions));
+  }
+
+  checkManagementAuth() : Observable<any>{
+    if (!getManagementKey()) return of(false);
+    return this.http.get<any>(this._url(API.checkManagement));
   }
 }
 

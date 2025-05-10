@@ -11,18 +11,18 @@
       }
     </div>
 
-    <!-- DRIVER & ATHLETES -->
-    <div class="shuttle-athletes spb-color-hover">
+    <!-- DRIVER & PASSENGERS -->
+    <div class="shuttle-passengers spb-color-hover">
 
       <!-- DRIVER -->
-      <div class="shuttle-athletes-toolbar line-bottom"
+      <div class="shuttle-passengers-toolbar line-bottom"
            fxLayout="row" fxLayoutAlign="start center">
 
         <div class="shuttle-driver"
              fxLayout="row" fxLayoutAlign="start center"
              [matMenuTriggerFor]="personsMenu"
              #menuTrigger="matMenuTrigger"
-             (click)="openPersonsMenu(menuTrigger, 'driver')"
+             (click)="openPersonsMenu(menuTrigger, true)"
              fxFlex>
           <mat-icon class="as-button margin-right">sports_motorsports</mat-icon>
           @if (shuttle.driver) {
@@ -32,23 +32,23 @@
           }
         </div>
         <mat-icon class="as-button margin-right-2"
-                  [class.disabled]="(shuttle.athletes||[]).length<1"
+                  [class.disabled]="(shuttle.passengers||[]).length<1"
                   (click)="editTimes()">schedule</mat-icon>
         <mat-icon class="as-button"
                   [matMenuTriggerFor]="personsMenu"
-                  #menuAthletesTrigger="matMenuTrigger"
-                  (click)="openPersonsMenu(menuAthletesTrigger, 'athlete')"
+                  #menuPassengersTrigger="matMenuTrigger"
+                  (click)="openPersonsMenu(menuPassengersTrigger, false)"
         >add</mat-icon>
       </div>
 
-      <!-- ATHLETES -->
-      <div class="shuttle-athletes-container">
-        @for (atl of shuttle.athletes; track $index; let odd = $odd) {
-          <div class="shuttle-athlete-row spb-color-hover"
+      <!-- PASSENGERS -->
+      <div class="shuttle-passengers-container">
+        @for (psg of shuttle.passengers; track $index) {
+          <div class="shuttle-passenger-row spb-color-hover"
                fxLayout="row" fxLayoutAlign="start center">
-            <span fxFlex>{{atl|personName:manager.session}}</span>
-            <span class="atl-time margin-right-2">{{atl|athleteTime:shuttle}}</span>
-            <mat-icon class="as-button" (click)="removeShuttleAthlete(atl)">close</mat-icon>
+            <span fxFlex>{{psg|personName:manager.session}}</span>
+            <span class="atl-time margin-right-2">{{psg|passengerTime:shuttle}}</span>
+            <mat-icon class="as-button" (click)="removeShuttlePassenger(psg)">close</mat-icon>
           </div>
         }
       </div>
@@ -59,10 +59,10 @@
     @for (prs of menuPersons$|async; track $index) {
       <button mat-menu-item
               (click)="addPerson(prs)">
-        <mat-icon>{{PERSON_ICON[prs.type]}}</mat-icon>
+        <mat-icon>{{prs|personIcon}}</mat-icon>
         <span class="menu-parson-name">{{prs.name}}</span>
-        @if (prs.type=='athlete') {
-          <span class="menu-athlete-type">{{prs.group|groupName:manager.session}}</span>
+        @if (!(asDriver$|async)) {
+          <span class="menu-passenger-group">{{prs.group|groupName:manager.session}}</span>
         }
       </button>
     }

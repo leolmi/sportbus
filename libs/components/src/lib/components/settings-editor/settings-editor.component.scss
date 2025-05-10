@@ -39,7 +39,66 @@
 
 
 .panel-item {
-  .field-day {
-    width: 24px;
+  label {
+    padding: 0 var(--spb-padding);
+  }
+
+  &.group-title {
+    padding: calc(var(--spb-padding) * 5) var(--spb-padding) var(--spb-padding);
+    font-size: 1.2em;
+    opacity: .5;
+    font-style: italic;
+  }
+
+  //.panel-item-actions {
+  //  //opacity: 0;
+  //}
+
+  &:hover {
+    background-color: var(--spb-color-ghost);
+  }
+}
+
+.label-strong {
+  font-weight: bold;
+}
+.person-name {
+  font-weight: bold;
+}
+.person-details {
+  opacity: .5;
+  font-style: italic;
+}
+
+.settings-section {
+  padding: calc(var(--spb-padding) * 2) calc(var(--spb-padding) * 2) calc(var(--spb-padding) * 4) calc(var(--spb-padding) * 2);
+
+  .settings-section-title {
+    font-size: 2em;
+    margin: calc(var(--spb-padding) * 2) var(--spb-padding);
+
+    > .mat-icon {
+      height: 32px;
+      width: 32px;
+      font-size: 32px;
+    }
+  }
+}
+
+.day-item {
+   background-color: var(--spb-color-ghost);
+  //border: var(--spb-color-border) 1px solid;
+
+  .day-name {
+    min-width: calc(14 * var(--spb-padding));
+    text-transform: capitalize;
+  }
+
+  .day-times {
+    min-width: calc(20 * var(--spb-padding));
+  }
+
+  &.on-clipboard {
+    opacity: .5;
   }
 }

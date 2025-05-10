@@ -1,0 +1,21 @@
+.calendar {
+  padding: var(--spb-padding);
+  //background-color: var(--spb-color-foreground);
+  //color: var(--spb-color-background);
+}
+
+.calendar-item {
+  user-select: none;
+
+  .item-group {}
+  .item-target {}
+  .item-time {
+    width: 50px;
+    text-align: right;
+  }
+  .item-start,
+  .item-end {
+    font-weight: bold;
+    width: 60px;
+  }
+}

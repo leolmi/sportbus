@@ -9,7 +9,7 @@ import {
   isUndefined as _isUndefined,
   padStart as _padStart
 } from 'lodash';
-import { ValueType } from './lib';
+import { DAY, ValueType } from './lib';
 import equal from 'fast-deep-equal';
 
 export const guid = (template = 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'): string => {
@@ -284,4 +284,21 @@ export const move = (arr: any[], fromIndex: number, toIndex: number): boolean =>
   if (fromIndex < toIndex) toIndex--;
   if (item) arr.splice(toIndex, 0, item[0]);
   return !!item;
+}
+
+export interface DayInfo {
+  num: number;
+  label: string;
+  small: string;
+}
+
+export const getWeekDays = (loc: (s: string) => string): DayInfo[] => {
+  return [1,2,3,4,5,6,0].map(n => {
+    const d = loc(DAY[n]);
+    return <DayInfo>{
+      num: n,
+      label: d,
+      small: d.charAt(0)
+    };
+  });
 }

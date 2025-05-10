@@ -1,35 +1,24 @@
-import {
-  BehaviorSubject,
-  catchError,
-  combineLatest, distinctUntilChanged,
-  filter,
-  map,
-  Observable,
-  of,
-  skip,
-  take,
-  withLatestFrom
-} from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, map, Observable, of } from 'rxjs';
 import { inject, InjectionToken } from '@angular/core';
-import { cloneDeep as _clone, get as _get, isString as _isString, set as _set } from 'lodash';
+import { cloneDeep as _clone, extend as _extend, get as _get, set as _set } from 'lodash';
 import {
   BUS_PREFIX,
   CalendarItem,
   getDayNumber,
   LocalContext,
-  NotificationType,
-  Page,
-  PAGES,
+  NotificationType, Person,
   Session,
   SessionOnDay,
-  updateIfChanged, updateIfLuChanged
+  updateIfLuChanged
 } from '@olmi/model';
 import { SPORTBUS_API } from './interaction';
 import { SPORTBUS_NOTIFIER } from './notifier';
 import { SPORTBUS_STATE } from './app.state';
 import { ConfirmDialogUtility } from '@olmi/components';
+import { Clipboard } from '@angular/cdk/clipboard';
 
 export class SessionManager {
+  private readonly _clipboard = inject(Clipboard);
   private readonly _interaction = inject(SPORTBUS_API);
   private readonly _notifier = inject(SPORTBUS_NOTIFIER);
   private readonly _state = inject(SPORTBUS_STATE);
@@ -39,7 +28,6 @@ export class SessionManager {
   session$: BehaviorSubject<Session|undefined>;
   sessionOnDay$: BehaviorSubject<SessionOnDay|undefined>;
   date$: BehaviorSubject<Date>;
-  page$: BehaviorSubject<Page>;
 
   isEmpty$: Observable<boolean>;
   isLoadingSod$: Observable<boolean>;
@@ -51,7 +39,6 @@ export class SessionManager {
     this.session$ = new BehaviorSubject<Session | undefined>(undefined);
     const today = new Date(Date.now());
     this.date$ = new BehaviorSubject<Date>(today);
-    this.page$ = new BehaviorSubject<Page>(PAGES[0]);
     this.sessionOnDay$ = new BehaviorSubject<SessionOnDay|undefined>(undefined);
     this._loadingSod$ = new BehaviorSubject<number>(0);
 
@@ -107,6 +94,10 @@ export class SessionManager {
     return this.session$.value;
   }
 
+  get sessionOnDay() {
+    return this.sessionOnDay$.value;
+  }
+
   updateSession(handler: (s: Session) => boolean) {
     const cs = _clone(this.session$.value);
     if (cs && handler(cs)) {
@@ -148,31 +139,44 @@ export class SessionManager {
   }
 
   close() {
-    this._confirm.show({
-      message: 'Do you want to close the current session?',
-      showYes: true,
-      showNo: true
-    }, (r) => {
-      if (!!r) {
-        // resetta la sessione
-        this.session$.next(undefined);
-        // resetta il giorno
-        const today = new Date(Date.now());
-        this.date$.next(today);
-        this._state.closeSession();
-      }
+    this._confirm.showYesNo('Do you want to close the current session?', () => {
+      // resetta la sessione
+      this.session$.next(undefined);
+      // resetta il giorno
+      const today = new Date(Date.now());
+      this.date$.next(today);
+      this._state.closeSession();
     });
+  }
+
+  share() {
+    this._clipboard.copy(this._interaction.getSessionUrl(this.session?.code||''));
+    this._notifier.notify('url copied successfully', NotificationType.success);
   }
 
   setDate(d: Date) {
     this.date$.next(d);
   }
 
-  setPage(page: Page|string|undefined) {
-    if (_isString(page)) page = PAGES.find(p => p.code === `${page}`);
-    if (page) this.page$.next(page);
+  /**
+   * aggiona il soggetto sia che faccia parte della sessione o della sessione-giornaliera
+   * @param prs
+   */
+  updatePerson(prs: Person) {
+    if (!!(this.session?.persons||[]).find(p => p.code === prs.code)) {
+      this.updateSession((ses) => {
+        const op = ses.persons.find(p => p.code === prs.code);
+        _extend(op, prs);
+        return true;
+      });
+    } else if (!!(this.sessionOnDay?.persons||[]).find(p => p.code === prs.code)) {
+      this.updateSessionOnDay((sod) => {
+        const op = sod.persons.find(p => p.code === prs.code);
+        _extend(op, prs);
+        return true;
+      });
+    }
   }
 }
-
 
 export const SPORTBUS_MANAGER = new InjectionToken<SessionManager>('SPORTBUS_MANAGER');

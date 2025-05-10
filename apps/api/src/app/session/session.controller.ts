@@ -1,10 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { SessionService } from './session.service';
 import { badRequest, SessionDoc, SessionOnDayDoc } from '../../model';
 
 
 /**
- * GESTIONE DELLE SESSIONI
+ * SESSIONI
  *
  *  - get    /session
  *  - post   /session { ...session }
@@ -41,14 +41,6 @@ export class SessionController {
   }
 
   /**
-   * elimina una sessione e tutti i suoi dati giornalieri
-   */
-  @Delete('delete/:code')
-  async delete(@Param() prms: any): Promise<boolean> {
-    return this.sessionService.deleteSession(prms.code);
-  }
-
-  /**
    * dati giornalieri della sessione
    * @param prms
    */
@@ -65,21 +57,5 @@ export class SessionController {
   async updateSessionOnDay(@Body() sessionOnDay: Partial<SessionOnDayDoc>): Promise<Partial<SessionOnDayDoc>|undefined> {
     if (!sessionOnDay?.session) badRequest('undefined session code');
     return this.sessionService.upsertSessionOnDay(sessionOnDay);
-  }
-
-  /**
-   * elimina tutto
-   */
-  @Delete('delete-all')
-  async deleteAll(): Promise<boolean> {
-    return this.sessionService.deleteAll();
-  }
-
-  /**
-   * elimina tutte le session-on-day
-   */
-  @Delete('delete-all-sod')
-  async deleteAllSod(): Promise<boolean> {
-    return this.sessionService.deleteAllSessionOnDays();
   }
 }

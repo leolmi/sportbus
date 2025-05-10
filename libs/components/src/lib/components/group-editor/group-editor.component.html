@@ -1,0 +1,16 @@
+<h2 mat-dialog-title spb-i18n>Group</h2>
+<div class="spb-editor-dialog-content" mat-dialog-content>
+  <div class="spb-editor-dialog-container" fxLayout="column">
+    @if (value$|async; as grp) {
+      <!-- name -->
+      <input [value]="grp.name||''"
+             class="spb-basic-input big-input full-width margin-bottom-2"
+             (input)="updateValue$(value$, $event, 'name','target.value')">
+    }
+  </div>
+</div>
+<mat-dialog-actions>
+  <div fxFlex></div>
+  <button mat-flat-button mat-dialog-close spb-i18n>Ok</button>
+  <button mat-button mat-dialog-close spb-i18n>Cancel</button>
+</mat-dialog-actions>

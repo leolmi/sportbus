@@ -1,3 +1,4 @@
+export * from './area';
 export * from './buttons-status';
 export * from './calendar-item';
 export * from './consts';

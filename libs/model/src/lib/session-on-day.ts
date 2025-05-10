@@ -11,13 +11,33 @@ export class SessionOnDay implements LastUpdate {
     this.lu = i?.lu||0;
     this.date = i?.date||0;
     this.session = i?.session||'';
-    this.athletes = i?.athletes||{};
+    this.passengersMap = i?.passengersMap||{};
+    this.persons = (i?.persons||[]).map(p => new Person(p));
     this.shuttles = (i?.shuttles||[]).map(s => new Shuttle(s));
   }
 
+  /**
+   * lust-update time
+   */
   lu: number;
+  /**
+   * data di riferimento
+   */
   date: number;
+  /**
+   * sessione di riferimento
+   */
   session: string;
-  athletes: Dictionary<boolean>;
+  /**
+   * elenco persone solo per questo giorno di sessione
+   */
+  persons: Person[];
+  /**
+   * mappa stato passeggeri
+   */
+  passengersMap: Dictionary<boolean>;
+  /**
+   * elenco navette
+   */
   shuttles: Shuttle[];
 }

@@ -1,7 +1,7 @@
 export const environment = {
   production: false,
   debug: true, //!!process.env.SPORTBUS_DEBUG,
-  managementKey: process.env.SPORTBUS_MANAGEMENT_KEY||'buskey',
+  managementKey: process.env.SPORTBUS_MANAGEMENT_KEY||'BusKey',
   sessionDurationDays: 90,
   google: {
     mail: process.env.GOOGLE_MAIL || 'leo.olmi@gmail.com',

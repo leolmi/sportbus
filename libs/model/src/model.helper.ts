@@ -10,6 +10,8 @@ export const isRightCode = (code?: string): boolean =>
   /^([0-9A-Z]{3})-([0-9A-Z]{3})-([0-9A-Z]{3})$/gi.test(`${code||''}`);
 
 
+export const sanitizeCode = (v: string): string => `${v||''}`.toUpperCase();
+
 /**
  * integra i valori passati senza alterare gli esistenti
  * @param os

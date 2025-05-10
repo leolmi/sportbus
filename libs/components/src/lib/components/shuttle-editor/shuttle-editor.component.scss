@@ -5,7 +5,7 @@
   margin: var(--spb-padding) 0;
   padding: var(--spb-padding);
 
-  .shuttle-athletes {
+  .shuttle-passengers {
     margin-top: var(--spb-padding);
     border: var(--spb-color-border) 3px solid;
     border-radius: 6px;
@@ -20,7 +20,7 @@
   }
 
   &.temporary {
-    .shuttle-athletes {
+    .shuttle-passengers {
       border-style: dashed !important;
       border-width: 1px;
       opacity: .6;
@@ -32,11 +32,11 @@
 .menu-parson-name {
   margin-right: var(--spb-padding);
 }
-.menu-athlete-type {
+.menu-passenger-groupe {
   opacity: .4;
 }
 
-.shuttle-athletes-toolbar {
+.shuttle-passengers-toolbar {
   padding-bottom: 4px;
   margin-bottom: var(--spb-padding);
 
@@ -49,7 +49,7 @@
     }
   }
 }
-.shuttle-athlete-row {
+.shuttle-passenger-row {
   .atl-time {
     font-weight: bold;
   }

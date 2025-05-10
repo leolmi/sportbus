@@ -46,9 +46,14 @@ export class ConfirmDialogUtility {
       .open(ConfirmDialogComponent, {
         data,
         width: data.width||'300px',
-        panelClass: 'spb-confirm-dialog'
+        panelClass: ['spb-confirm-dialog', 'spb-not-expand']
       })
       .afterClosed()
       .subscribe(r => handler(<boolean|undefined>r));
+  }
+
+  showYesNo(message: string, yesHandler: () => any) {
+    this.show({ message, showYes: true, showNo: true },
+      (r) => !!r ? yesHandler() : null);
   }
 }

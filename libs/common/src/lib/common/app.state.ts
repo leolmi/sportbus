@@ -1,6 +1,6 @@
 import { inject, InjectionToken } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-import { BehaviorSubject, combineLatest, filter, map, Observable, take } from 'rxjs';
+import { BehaviorSubject, combineLatest, distinctUntilChanged, filter, map, Observable, skip, take } from 'rxjs';
 import { keys as _keys, values as _values } from 'lodash';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import {
@@ -9,7 +9,7 @@ import {
   DEFAULT_THEME,
   Dictionary,
   Layout,
-  LocalContext, MenuItem, mergeStatus, Session,
+  LocalContext, Locale, MenuItem, mergeStatus, Session,
   setBodyClass,
   SPORTBUS_USER_OPTIONS_FEATURE, SportbusInfo, SYSTEM_MENU_CODE,
   THEME_CLASS, THEME_DARK, THEME_LIGHT,
@@ -20,6 +20,14 @@ import { AppUserOptions } from './user-options';
 import { DOCUMENT } from '@angular/common';
 import { SPORTBUS_API } from './interaction';
 import { SPORTBUS_PAGES, SportbusPageManifest } from './sportbus-page.manifest';
+import { MatDialog } from '@angular/material/dialog';
+import { SPORTBUS_I18N } from './i18n';
+import { MANAGEMENT_PAGE_ROUTE } from '../../../../../apps/sportbus/src/app/pages/management/management.manifest';
+import { ACCESS_PAGE_ROUTE } from '../../../../../apps/sportbus/src/app/pages/access/access.manifest';
+import {
+  SESSION_PAGE_ROUTE,
+  SETTINGS_PAGE_ROUTE
+} from '../../../../../apps/sportbus/src/app/pages/session/session.manifest';
 
 const MAX_WIDTH = 1400;
 const COMPACT_WIDTH = 800;
@@ -38,9 +46,11 @@ export class SportbusState {
   private readonly _manifests = inject(SPORTBUS_PAGES);
   private readonly _layout = inject(BreakpointObserver);
   private readonly _interaction = inject(SPORTBUS_API);
+  private readonly _i18n = inject(SPORTBUS_I18N);
   private readonly _changed$: BehaviorSubject<any>;
 
-  private  _info$: BehaviorSubject<SportbusInfo>;
+
+  info$: BehaviorSubject<SportbusInfo>;
   layout$: BehaviorSubject<Layout>;
   theme$: BehaviorSubject<string>;
   title$: BehaviorSubject<string>;
@@ -48,8 +58,10 @@ export class SportbusState {
   manifest$: BehaviorSubject<SportbusPageManifest|undefined>;
   menu$: BehaviorSubject<MenuItem[]>;
   status$: BehaviorSubject<ButtonsStatus>;
+  firstAccess$: Observable<boolean>;
 
   menuHandler?: (item: MenuItem) => void;
+  showInfo?: () => void;
 
   get pages() {
     return (this._manifests||[]).filter(m => !m.disabled);
@@ -57,7 +69,7 @@ export class SportbusState {
 
   constructor() {
     this._changed$ = new BehaviorSubject<any>({});
-    this._info$ = new BehaviorSubject<SportbusInfo>(new SportbusInfo());
+    this.info$ = new BehaviorSubject<SportbusInfo>(new SportbusInfo());
     this.layout$ = new BehaviorSubject<Layout>({});
     this.manifest$ = new BehaviorSubject<SportbusPageManifest|undefined>(this._manifests.find(m => m.default));
     this.menu$ = new BehaviorSubject<MenuItem[]>([]);
@@ -66,7 +78,7 @@ export class SportbusState {
     this.theme$ = new BehaviorSubject<string>(o.theme);
     this.title$ = new BehaviorSubject<string>('');
     this.isDebugMode$ = LocalContext.changed$.pipe(map(() => LocalContext.isLevel('debug')));
-
+    this.firstAccess$ = AppUserOptions.firstAccess$.pipe(map(a => !!a));
 
     this._layout
       .observe(_values(MATCHES))
@@ -83,8 +95,8 @@ export class SportbusState {
       AppUserOptions.updateFeature(SPORTBUS_USER_OPTIONS_FEATURE, { theme });
     });
 
-    combineLatest([this.theme$, LocalContext.changed$])
-      .subscribe(([t, c]) => this.updateStatus(calcStatusForSystemMenu(t)));
+    combineLatest([this.theme$, this._i18n.locale$, LocalContext.changed$])
+      .subscribe(([t, l, c]) => this.updateStatus(calcStatusForSystemMenu(t, l)));
 
     this.layout$.subscribe(l =>
       _keys(l).forEach(k =>
@@ -98,7 +110,7 @@ export class SportbusState {
         if (manifest && this.manifest$.value?.route !== manifest.route) this.manifest$.next(manifest);
       });
 
-    combineLatest([this.manifest$, this._info$, this.layout$, this.status$, this._changed$]).pipe(
+    combineLatest([this.manifest$, this.info$, this.layout$, this.status$, this._changed$]).pipe(
       filter(([m,i,l,s,c]) => !!m && !!i))
       .subscribe(([manifest, info, layout, status, c]) => {
         const menu = (!!layout?.narrow) ? manifest?.narrowMenu : manifest?.menu;
@@ -112,16 +124,21 @@ export class SportbusState {
     this._interaction.ping()
       .pipe(filter(i => !!i), take(1))
       .subscribe((i: SportbusInfo) =>
-        this._info$.next(i));
+        this.info$.next(i));
+
+    this._i18n.locale$
+      .pipe(skip(1), distinctUntilChanged())
+      .subscribe(() => location.reload());
   }
 
   get info() {
-    return this._info$.value;
+    return this.info$.value;
   }
 
   private _updateMenuStatus(menu?: MenuItem[], status?: ButtonsStatus) {
     const s = status || this.status$.value || new ButtonsStatus();
     (menu||[]).forEach(mi => {
+      mi.text = this._i18n.localize(mi.text||'');
       mi.hidden = !!s.hidden[mi.code||''];
       mi.disabled = !!s.disabled[mi.code||''];
       mi.active = !!s.active[mi.code||''];
@@ -150,10 +167,19 @@ export class SportbusState {
         LocalContext.toggleLevel('debug');
         break;
       case SYSTEM_MENU_CODE.management:
-        this._router.navigate(['management'])
+        this._router.navigate([MANAGEMENT_PAGE_ROUTE])
         break;
       case SYSTEM_MENU_CODE.home:
-        this._router.navigate(['access'])
+        this._router.navigate([ACCESS_PAGE_ROUTE])
+        break;
+      case SYSTEM_MENU_CODE.info:
+        if (this.showInfo) this.showInfo();
+        break;
+      case SYSTEM_MENU_CODE.locale_it:
+        this._i18n.setLocale('en');
+        break;
+      case SYSTEM_MENU_CODE.locale_en:
+        this._i18n.setLocale('it');
         break;
       default:
         console.warn(...BUS_PREFIX, 'unknown system menu item', item);
@@ -163,7 +189,15 @@ export class SportbusState {
 
   closeSession() {
     AppUserOptions.updateFeature(SPORTBUS_USER_OPTIONS_FEATURE, { session: '' });
-    this._router.navigate(['access']);
+    this._router.navigate([ACCESS_PAGE_ROUTE]);
+  }
+
+  openSettingsEditor(code: string) {
+    this._router.navigate([SESSION_PAGE_ROUTE, code, SETTINGS_PAGE_ROUTE]);
+  }
+
+  openSession(code: string) {
+    this._router.navigate([SESSION_PAGE_ROUTE, code]);
   }
 
   updateStatus(chs: Partial<ButtonsStatus>) {
@@ -185,16 +219,22 @@ export class SportbusState {
         break;
     }
   }
+
+  toggleTheme() {
+    this.theme$.next((this.theme$.value === THEME_DARK) ? THEME_LIGHT : THEME_DARK);
+  }
 }
 
 export const SPORTBUS_STATE = new InjectionToken<SportbusState>('SPORTBUS_STATE');
 
 
-export const calcStatusForSystemMenu = (theme: string): Partial<ButtonsStatus> => {
+export const calcStatusForSystemMenu = (theme: string, locale: Locale): Partial<ButtonsStatus> => {
   return {
     hidden: {
       [SYSTEM_MENU_CODE.darkTheme]: theme === THEME_DARK,
       [SYSTEM_MENU_CODE.lightTheme]: theme === THEME_LIGHT,
+      [SYSTEM_MENU_CODE.locale_en]: locale === 'it',
+      [SYSTEM_MENU_CODE.locale_it]: locale === 'en',
     },
     active: {
       [SYSTEM_MENU_CODE.globalDebug]: LocalContext.isLevel('debug')

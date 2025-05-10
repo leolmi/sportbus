@@ -1,3 +1,4 @@
+<session-header></session-header>
 <div class="page-editor shuttle">
   @if (manager.dayHasCalendarItems$|async) {
     @if (manager.isLoadingSod$|async) {
@@ -5,46 +6,44 @@
     } @else {
       <!-- chi c'è -->
       <div class="persons-list">
-        @if (athletesMap$|async; as atlMap) {
-          @for (atl of athletes$|async; track $index) {
+        @if (passengersMap$|async; as psgMap) {
+          @for (psg of passengers$|async; track $index) {
             <div class="person-selector"
                  fxLayout="row" fxLayoutAlign="start center"
-                 (click)="toggleAthlete(atl)"
-                 [class.present]="atlMap[atl.code]==='p'"
-                 [class.absent]="atlMap[atl.code]==='a'"
-                 [class.ready]="atlMap[atl.code]==='r'"
-                 [class.unknown]="!atlMap[atl.code]">
-              <span class="text">{{atl.name}}</span>
-              @if (manager.sessionOnDay$|async|activeDirections:atl; as directions) {
+                 (click)="togglePassenger(psg)"
+                 [class.present]="psgMap[psg.code]==='p'"
+                 [class.absent]="psgMap[psg.code]==='a'"
+                 [class.ready]="psgMap[psg.code]==='r'"
+                 [class.unknown]="!psgMap[psg.code]">
+              <span class="text">{{psg.name}}</span>
+              @if (manager.sessionOnDay$|async|activeDirections:psg; as directions) {
                 <mat-icon>{{ICON_BY_DIRECTIONS[directions]}}</mat-icon>
               } @else {
-                <mat-icon>{{ICON_BY_CODE[atlMap[atl.code]]||UNKNOWN_ICON}}</mat-icon>
+                <mat-icon>{{ICON_BY_CODE[psgMap[psg.code]]||UNKNOWN_ICON}}</mat-icon>
               }
-              @if (atl.group) {
-                <div class="athlete-group">{{atl.group|groupName:manager.session}}</div>
+              @if (psg.group) {
+                <div class="passenger-group">{{psg.group|groupName:manager.session}}</div>
               }
             </div>
           }
         }
+        <div class="passenger-add"
+             fxLayout="row" fxLayoutAlign="center center"
+             matTooltip="add new passenger"
+             (click)="addPassenger()">
+          <mat-icon>person_add</mat-icon>
+        </div>
       </div>
-      <!-- calendario -->
-      <div class="calendar">
-        @for (item of calendar$|async; track $index) {
-          <div class="calendar-item"
-               fxLayout="row" fxLayoutAlign="start center">
-            <span class="item-group" fxFlex>{{item.group}}</span>
-            <span class="item-target" fxFlex>{{item.target}}</span>
-            <span class="item-time item-start">{{item.start}}</span>
-            <span class="item-time item-end">{{item.end}}</span>
-          </div>
-        }
-      </div>
-      <!-- navette necessarie A/R -> chi li porta -->
+
+      <!-- calendario attività -->
+      <session-calendar></session-calendar>
+
+      <!-- navette necessarie A/R -->
       <div class="shuttles">
         <div class="shuttles-container" [fxLayout]="shuttlesLayout$|async">
           <div class="shuttles-column" fxLayout="column" fxFlex>
             <div class="shuttle-column-header" fxLayout="column">
-              <div class="direction" [class.ready]="manager.sessionOnDay$|async|isReadyDirection:'A'">A</div>
+              <div class="direction" [class.ready]="manager.sessionOnDay$|async|isReadyDirection:'A'" spb-i18n>{{KEYS._session_to_destination}}</div>
               <shuttle-errors direction="A"></shuttle-errors>
             </div>
             @for (shA of shuttles$|async|shuttleType:'A'; track $index) {
@@ -53,7 +52,7 @@
           </div>
           <div class="shuttles-column spb-background-ghost" fxLayout="column" fxFlex>
             <div class="shuttle-column-header" fxLayout="column">
-              <div class="direction" [class.ready]="manager.sessionOnDay$|async|isReadyDirection:'R'">R</div>
+              <div class="direction" [class.ready]="manager.sessionOnDay$|async|isReadyDirection:'R'" spb-i18n>{{KEYS._session_back_home}}</div>
               <shuttle-errors direction="R"></shuttle-errors>
             </div>
             @for (shR of shuttles$|async|shuttleType:'R'; track $index) {
@@ -71,4 +70,6 @@
   } @else {
     <div class="empty-container">no shuttle on this day</div>
   }
+  <div class="bottom-fixed click-content full-width text-align-center margin-bottom-2"
+       (click)="goToConfiguration()" spb-i18n>{{KEYS._session_configure}}</div>
 </div>
