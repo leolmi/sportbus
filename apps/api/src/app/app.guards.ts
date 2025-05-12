@@ -22,10 +22,10 @@ export class AuthGuard implements CanActivate {
     const { ip } = req;
     // stessa chiave per tutti gli ip non leggibili
     const ip_key = `${ip||'???'}`;
-    console.log(`check key "${key}" on ip "${ip_key}"...`);
+    // console.log(`check key "${key}" on ip "${ip_key}"...`);
     if (!checkAttempts(ip_key)) return false;
     const valid = _isString(key) && (`${key||''}` === environment.managementKey);
-    console.log(`check key valid =`, valid);
+    // console.log(`check key valid =`, valid);
     if (!valid) {
       // se la login fallisce incrementa il contatore dei tentativi d'accesso
       // e imposta il time dell'ultimo tentativo

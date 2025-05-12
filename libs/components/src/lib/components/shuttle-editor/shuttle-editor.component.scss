@@ -6,17 +6,48 @@
   padding: var(--spb-padding);
 
   .shuttle-passengers {
-    margin-top: var(--spb-padding);
-    border: var(--spb-color-border) 3px solid;
-    border-radius: 6px;
+    margin-top: 0;
+    border: var(--spb-color-error) 3px solid;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
     padding: var(--spb-padding);
     min-height: calc(var(--spb-padding) * 8);
+
+    &.temporary {
+      border-top-left-radius: 6px;
+      border-top-right-radius: 6px;
+    }
   }
 
-  .shuttle-title {
+
+  .shuttle-header {
     //padding-bottom: var(--spb-padding);
     font-variant: all-petite-caps;
     font-size: 1.6em;
+    padding: 6px 6px 0;
+    background-color: var(--spb-color-error);
+    color: var(--spb-color-error-contrast);
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+
+    .shuttle-evidence {
+      width: 80px;
+      opacity: .8;
+    }
+
+    .inverse {
+      transform: scale(-1, 1);
+    }
+  }
+
+  &.direction-ok {
+    .shuttle-passengers {
+      border-color: var(--spb-color-success);
+    }
+    .shuttle-header {
+      background-color: var(--spb-color-success);
+      color: var(--spb-color-success-contrast);
+    }
   }
 
   &.temporary {
@@ -49,8 +80,14 @@
     }
   }
 }
+
+.shuttle-passengers-container {
+  min-height: 24px;
+}
+
 .shuttle-passenger-row {
   .atl-time {
     font-weight: bold;
+    font-size: 1.3em;
   }
 }

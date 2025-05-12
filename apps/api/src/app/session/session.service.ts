@@ -22,8 +22,7 @@ export class SessionService implements OnModuleInit {
     try {
       const code = sanitizeCode(session._id);
       const ssc = new Session(session);
-      // lastUpdate è gestito internamente
-      ssc.lastUpdate = Date.now();
+      ssc.lu = Date.now();
       const result = await this.sessionModel.updateOne({ _id: code }, { $set: ssc }, { upsert: true }).exec();
       if (environment.debug) console.log(...BUS_PREFIX, `update session results for "${session.code}"`, result);
       if (result.acknowledged) return session;
@@ -38,6 +37,7 @@ export class SessionService implements OnModuleInit {
     const code = sanitizeCode(guid('xxx-xxx-xxx'));
     const session = new Session({
       _id: code,
+      lu: Date.now(),
       code,
       name: 'New Session',
       groups: [new Group({ name: 'Default' })]
@@ -76,12 +76,13 @@ export class SessionService implements OnModuleInit {
   async upsertSessionOnDay(sod: Partial<SessionOnDayDoc>): Promise<Partial<SessionOnDayDoc>|undefined> {
     if (environment.debug) console.log(...BUS_PREFIX, 'update session-on-day request', sod);
     try {
+      const usod = <SessionOnDay>{ ...sod, lu: Date.now() };
       const result: any = await this.sessionOnDayModel.updateOne({
-        session: sanitizeCode(sod.session),
-        date: sod.date
-      }, { $set: sod }, { upsert: true });
+        session: sanitizeCode(usod.session),
+        date: usod.date
+      }, { $set: usod }, { upsert: true });
       if (environment.debug) console.log(...BUS_PREFIX, `update session-on-day results for "${sod.session}" on "${sod.date}"`, result);
-      if (result?.acknowledged) return sod;
+      if (result?.acknowledged) return usod;
     } catch (err) {
       console.error(`error while updating session-on-day "${sod.session}" on "${sod.date}"`, err);
     }
@@ -95,7 +96,7 @@ export class SessionService implements OnModuleInit {
     const duration = checkNumber(environment.sessionDurationDays, 30, 300);
     const horizon = Date.now() - (duration * (24 * 60 * 60 * 1000));
     const resp: any = { expired: 0, warnings: 0 };
-    const expired = await this.sessionModel.find({ lastUpdate: { $lte: horizon } }).exec();
+    const expired = await this.sessionModel.find({ lu: { $lte: horizon } }).exec();
     for (const exp of expired) {
       const exp_del = await this.deleteSession(exp._id);
       if (exp_del) {

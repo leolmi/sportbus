@@ -1,0 +1,16 @@
+.shuttle-column-header {
+  user-select: none;
+  margin-top: var(--spb-padding);
+
+  .direction {
+    font-weight: bold;
+    font-size: 2em;
+    text-align: center;
+    color: var(--spb-color-error);
+    text-transform: capitalize;
+
+    &.ready {
+      color: var(--spb-color-success);
+    }
+  }
+}

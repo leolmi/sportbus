@@ -26,13 +26,13 @@ export class ShuttleErrorsComponent extends EditorBase {
   constructor() {
     super();
 
-    this.message$ = combineLatest([this.manager.session$, this.manager.sessionOnDay$])
-      .pipe(map(([ses, sod]: [Session | undefined, SessionOnDay | undefined]) => {
+    this.message$ = this.manager.context$
+      .pipe(map((context) => {
         // passeggeri non assegnati
-        const missp = getMissingPassengers(ses, sod, this.direction||'A');
+        const missp = getMissingPassengers(context, this.direction||'A');
         const missp_str = (missp.length>0) ? `${missp.map(p => `${p.name}`).join(', ')} not present yet; ` : '';
         // autisti non assegnati
-        const missdc = getMissingDriversCount(sod, this.direction||'A');
+        const missdc = getMissingDriversCount(context.sod, this.direction||'A');
         const missd_str = (missdc > 0) ? `${missdc} missing driver${(missdc > 1) ? 's' : ''};` : '';
         return `${missp_str}${missd_str}`;
       }));

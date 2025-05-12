@@ -14,12 +14,14 @@ import {
   SPORTBUS_USER_OPTIONS_FEATURE
 } from '@olmi/model';
 import { BehaviorSubject, catchError, combineLatest, distinctUntilChanged, filter, of, take } from 'rxjs';
-import { AppUserOptions, I18nDirective } from '@olmi/common';
+import { AppUserOptions, dateLocaleFactory, I18nDirective } from '@olmi/common';
 import { FALLBACK_PAGE_ROUTE } from '../default.routes';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { EditorBase } from '@olmi/components';
 import { MAT_DATE_LOCALE } from '@angular/material/core';
 import { MENU_CODE } from './session.menu';
+
+
 
 @Component({
   imports: [
@@ -34,7 +36,7 @@ import { MENU_CODE } from './session.menu';
   styleUrl: './session.component.scss',
   standalone: true,
   providers: [
-    { provide: MAT_DATE_LOCALE, useValue: 'it-IT' }
+    { provide: MAT_DATE_LOCALE, useFactory: dateLocaleFactory }
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -146,3 +148,5 @@ export class SessionComponent extends EditorBase implements OnDestroy {
     const v = e.target.value;
   }
 }
+
+

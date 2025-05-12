@@ -1,14 +1,15 @@
 import {
-  CalendarItem,
+  CalendarItem, DEFAULT_GROUP,
   Dictionary,
-  getTimeString,
+  getTimeString, isEmptyContext,
   Person,
-  Session,
+  Session, SessionContext,
   SessionOnDay,
   Shuttle,
   ShuttleDirection
 } from '@olmi/model';
 import { chunk as _chunk, flatten as _flatten, keys as _keys, omit as _omit, reduce as _reduce } from 'lodash';
+import { SessionManager } from '@olmi/common';
 
 export class CalendarItemWrapper {
   target: string = '';
@@ -23,13 +24,14 @@ export class CalendarItemWrapper {
  */
 export const isPassenger = (p: Person): boolean => !p.isDriver || !!p.group;
 
+export const allPersons = (context: SessionContext): Person[] => <Person[]>[...context.ses?.persons||[], ...context.sod?.persons||[]];
+
 /**
  * restituisce l'elenco dei passeggeri presenti
- * @param ses
- * @param sod
+ * @param context
  */
-export const getActivePassengers = (ses?: Session, sod?: SessionOnDay): Person[] =>
-  (ses?.persons||[]).filter(p => isPassenger(p) && !!(<any>sod?.passengersMap || {})[p.code]);
+export const getActivePassengers = (context: SessionContext): Person[] =>
+  allPersons(context).filter(p => isPassenger(p) && !!(<any>context.sod?.passengersMap || {})[p.code]);
 
 
 /**
@@ -44,13 +46,12 @@ export const getDirectionPassengerCodes = (sod?: SessionOnDay, direction: Shuttl
 
 /**
  * elenco degli atleti presenti ma ancora non inseriti in navette nella direzione specificata
- * @param ses
- * @param sod
+ * @param context
  * @param direction
  */
-export const getMissingPassengers = (ses: Session|undefined, sod: SessionOnDay|undefined, direction: ShuttleDirection): Person[] => {
-  const aps = getActivePassengers(ses, sod);
-  const dps = getDirectionPassengerCodes(sod, direction);
+export const getMissingPassengers = (context: SessionContext, direction: ShuttleDirection): Person[] => {
+  const aps = getActivePassengers(context);
+  const dps = getDirectionPassengerCodes(context.sod, direction);
   return aps.filter(a => !dps.includes(a.code));
 }
 
@@ -106,31 +107,34 @@ export const addShuttlePerson = (sod: SessionOnDay, prs: Person, shuttle: Shuttl
   })
 }
 
+
+
 /**
  * restituisce l'elenco delle persone per tipo
- * @param ses
+ * @param context
  * @param driver
- * @param sod
  * @param sht
  */
-export const getPersons = (ses: Session|undefined, driver: boolean, sod: SessionOnDay, sht: Shuttle|undefined): Person[] => {
+export const getPersons = (context: SessionContext, driver: boolean, sht?: Shuttle): Person[] => {
   if (driver) {
-    return (ses?.persons||[]).filter(p => p.isDriver);
+    return allPersons(context).filter(p => p.isDriver);
   } else {
-    return getMissingPassengers(ses, sod, sht?.direction||'A');
+    return getMissingPassengers(context, sht?.direction||'A');
   }
 }
 
-export const getPersonName = (session: Session|undefined, pcode?: string): string => {
-  return (session?.persons || []).find(p => p.code === pcode||'')?.name || pcode || '';
+export const getPersonName = (context: SessionContext, pcode?: string): string => {
+  let prs = (context.ses?.persons || []).find(p => p.code === pcode||'');
+  if (!prs) prs = (context.sod?.persons || []).find(p => p.code === pcode||'');
+  return prs?.name || pcode || '';
 }
 
 export const getPersonIcon = (prs?: Person): string => {
   return prs?.isDriver ? 'sports_motorsports' : (prs ? 'person' : 'person_outline');
 }
 
-export const getGroupName = (session: Session|undefined, gcode?: string): string => {
-  return (session?.groups || []).find(g => g.code === gcode||'')?.name || gcode || '';
+export const getGroupName = (context: SessionContext, gcode?: string): string => {
+  return (context.ses?.groups || []).find(g => g.code === gcode||'')?.name || gcode || '';
 }
 
 const isDirectionPresent = (sod: SessionOnDay|undefined, acode: string, direction: ShuttleDirection): boolean =>
@@ -185,10 +189,12 @@ const calcShuttlesMap = (items: CalendarItem[]): {[code: string]: Partial<Shuttl
 
 /**
  * calcola la mappa dei codici navetta per utente
+ * @param context
+ * @param items
  */
-const calcShuttlesPassengersMap = (ses: Session, sod: SessionOnDay, items: CalendarItem[]): any => {
-  const defGroup = ses.groups[0];
-  const passengers = getActivePassengers(ses, sod);
+const calcShuttlesPassengersMap = (context: SessionContext, items: CalendarItem[]): any => {
+  const defGroup = (context.ses?.groups||[])[0];
+  const passengers = getActivePassengers(context);
   return _reduce(passengers, (m, a) => {
     // item di calendario competente per l'atleta
     const item = items.find(i => i.group === (a.group||defGroup?.code||''));
@@ -202,26 +208,31 @@ const calcShuttlesPassengersMap = (ses: Session, sod: SessionOnDay, items: Calen
   }, <any>{});
 }
 
-const getEffectivePassengers = (passengersMap: any, code: string, ses: Session, sod: SessionOnDay): string[] => {
+/**
+ *
+ * @param passengersMap   mappa passeggeri per navetta
+ * @param code            codice navetta
+ * @param context
+ */
+const getEffectivePassengers = (passengersMap: any, code: string, context: SessionContext,): string[] => {
   const direction = <ShuttleDirection>code.charAt(0);
-  const missa = getMissingPassengers(ses, sod, direction).map(a => a.code);
+  const missa = getMissingPassengers(context, direction).map(a => a.code);
   const routea: string[] = passengersMap[code]||[];
   return routea.filter(a => missa.includes(a));
 }
 
-const getShuttlesCount = (sod: SessionOnDay, code: string): number => {
+const getShuttlesCount = (sod: SessionOnDay|undefined, code: string): number => {
   const direction = <ShuttleDirection>code.charAt(0);
-  return (sod.shuttles||[]).filter(s => s.direction === direction).length;
+  return (sod?.shuttles||[]).filter(s => s.direction === direction).length;
 }
 
 /**
  * calcola le navette necessarie in base al numero ed i gruppi degli atleti presenti
- * @param ses
- * @param sod
+ * @param context
  * @param items
  */
-export const calcShuttles = (ses: Session|undefined, sod: SessionOnDay|undefined, items: CalendarItem[]): Partial<Shuttle>[] => {
-  if (!ses || !sod) return [];
+export const calcShuttles = (context: SessionContext, items: CalendarItem[]): Partial<Shuttle>[] => {
+  if (isEmptyContext(context)) return [];
 
   // mappa delle navette necessarie di andata e ritorno sulla base solo dei tempi e target
   // { codice: shuttle }
@@ -230,17 +241,17 @@ export const calcShuttles = (ses: Session|undefined, sod: SessionOnDay|undefined
 
   // mappa dei codici navetta per atleta
   // { codice: [atl1, ..., atlN] }
-  const passengersMap = calcShuttlesPassengersMap(ses, sod, items);
+  const passengersMap = calcShuttlesPassengersMap(context, items);
   // console.log('PASSENGERS MAP', passengersMap);
 
   const shuttles: Partial<Shuttle>[] = [];
   // sviluppo degli incastri navette sui tempi - navette sugli atleti
   _keys(passengersMap).forEach(code => {
-    const eff_atls = getEffectivePassengers(passengersMap, code, ses, sod);
+    const eff_atls = getEffectivePassengers(passengersMap, code, context);
     // numero di atleti che necessitano della tratta
     const achunks: string[][] = _chunk(eff_atls, 4);
     achunks.forEach((c, i) => {
-      const p = getShuttlesCount(sod, code);
+      const p = getShuttlesCount(context.sod, code);
       const base = shuttlesMap[code];
       const shCode = `${code}-${i+p}`;
       let exsh = shuttles.find(s => s.code === shCode);
@@ -270,3 +281,24 @@ export const mergeShuttles = (ds: Shuttle[], cs: Partial<Shuttle>[]): Shuttle[] 
     .map(s => new Shuttle(s));
   return [...ds, ...css];
 }
+
+/**
+ * vero se le navette sono completate nella direzione passata
+ * @param sod
+ * @param direction
+ */
+export const isReadyOnDirection = (sod: SessionOnDay|undefined, direction?: ShuttleDirection) => {
+  const passengers_map = sod?.passengersMap || {};
+  const eff_passengers = _keys(passengers_map).filter(a => passengers_map[a]);
+  const shuttles = (sod?.shuttles || []).filter(s => s.direction === direction);
+  const firstMissingPassenger = eff_passengers.find(a => !shuttles.find(s => s.passengers.includes(a)));
+  const firstMissingDriver = shuttles.find(s => !s.driver);
+  return !firstMissingPassenger && !firstMissingDriver;
+}
+
+/**
+ * vero se entrambe le tratte sono soddisfatte
+ * @param sod
+ */
+export const isComplete = (sod: SessionOnDay|undefined): boolean =>
+  (sod?.shuttles||[]).length>0 && isReadyOnDirection(sod, 'A') && isReadyOnDirection(sod, 'R');

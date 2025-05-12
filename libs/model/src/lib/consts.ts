@@ -9,13 +9,14 @@ export const SPORTBUS_SESSION_DEVELOP = 'develop';
 export const SPORTBUS_SESSION_STANDARD = 'standard';
 export const SPORTBUS_TITLE = SPORTBUS_NAME;
 export const SPORTBUS_AUTHOR = 'leo.olmi 2025';
-export const SPORTBUS_DEBUG_LEVELS_KEY = '';
+export const SPORTBUS_DEBUG_LEVELS_KEY = 'SPORTBUS-DEBUG-LEVELS';
 export const SPORTBUS_APP_USER_OPTIONS_KEY = 'SPORTBUS-USER-OPTIONS';
 export const SPORTBUS_USER_OPTIONS_FEATURE = 'user_options';
 export const THEME_LIGHT = 'light';
 export const THEME_DARK = 'dark';
 export const DEFAULT_THEME = THEME_LIGHT;
 export const DEFAULT_LOCALE: Locale = 'it';
+export const DEFAULT_GROUP = 'default_shuttle_group';
 
 export const MANAGEMENT_HEADER = 'MANAGEMENT-USER-KEY';
 

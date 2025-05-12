@@ -12,6 +12,7 @@ export * from './notifier';
 export * from './page';
 export * from './person';
 export * from './session';
+export * from './session-context';
 export * from './session-on-day';
 export * from './shuttle';
 export * from './sportbus-info';

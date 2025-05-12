@@ -23,5 +23,10 @@ const KEYS = {
   _person_driver: 'driver',
   _person_passenger: 'passenger',
   _person_mixed: 'driver or passenger',
+
+  _no_shuttle_on_day: 'no shuttle is needed for this day',
+  _add_shuttle_always: 'add shuttle always',
+
+  _my_name_title: 'my name for chat'
 };
 export default KEYS;

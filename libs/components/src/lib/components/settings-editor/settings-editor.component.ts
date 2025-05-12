@@ -8,19 +8,19 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatInputModule } from '@angular/material/input';
 import { EditorBase } from '../editor.base';
 import { Clipboard, ClipboardModule } from '@angular/cdk/clipboard';
-import { CalendarItem, DayInfo, getWeekDays, Group, Person } from '@olmi/model';
+import { CalendarItem, DayInfo, getWeekDays, Group, Person, SPORTBUS_USER_OPTIONS_FEATURE } from '@olmi/model';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { keys as _keys, reduce as _reduce, remove as _remove, sortBy as _sortBy } from 'lodash';
 import { BehaviorSubject, map, Observable } from 'rxjs';
 import { FormsModule } from '@angular/forms';
-import { I18nDirective, I18nPipe, SPORTBUS_I18N } from '@olmi/common';
-import { DayTimesPipe, PersonDetailsPipe } from './pipes';
+import { AppUserOptions, I18nDirective, I18nPipe, SPORTBUS_I18N } from '@olmi/common';
 import { EssentialToolbarComponent } from '../essential-toolbar/essential-toolbar.component';
 import { MatMenu, MatMenuModule } from '@angular/material/menu';
 import { PersonEditorComponent } from '../person-editor/person-editor.component';
 import { DayEditorComponent } from '../day-editor/day-editor.component';
-import KEYS from '../../../../../../resources.keys';
 import { GroupEditorComponent } from '../group-editor/group-editor.component';
+import { DayTimesPipe, PersonDetailsPipe, DayOfWeekPipe, IsWrongGroupPipe } from '../pipes';
+import KEYS from '../../../../../../resources.keys';
 
 interface PersonsGroup {
   persons: Person[];
@@ -46,7 +46,9 @@ interface PersonsGroup {
     DayTimesPipe,
     EssentialToolbarComponent,
     I18nPipe,
-    MatMenu
+    MatMenu,
+    DayOfWeekPipe,
+    IsWrongGroupPipe
   ],
   templateUrl: './settings-editor.component.html',
   styleUrl: './settings-editor.component.scss',
@@ -54,6 +56,7 @@ interface PersonsGroup {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SettingsEditorComponent extends EditorBase {
+  protected readonly KEYS = KEYS;
   private readonly _clipboard = inject(Clipboard);
   private readonly _i18n = inject(SPORTBUS_I18N);
   groupsCount$: Observable<string>;
@@ -94,7 +97,7 @@ export class SettingsEditorComponent extends EditorBase {
 
   private _updateCalendarItem(day: number, group: string, handler: (i: CalendarItem|undefined, list: CalendarItem[]) => boolean) {
     this.manager.updateSession(s => {
-      let item = s.calendar.find(ci => ci.dayOfWeek===day && ci.group === group);
+      let item = s.calendar.find(ci => ci.dayOfWeek === day && ci.group === group);
       return handler(item, s.calendar);
     });
   }
@@ -178,7 +181,12 @@ export class SettingsEditorComponent extends EditorBase {
     this.clipboard$.next(undefined);
   }
 
-  protected readonly KEYS = KEYS;
+  deleteCalendarItem(index: number) {
+    this.manager.updateSession((ses) => {
+      ses.calendar.splice(index, 1);
+      return true;
+    });
+  }
 }
 
 // const getTimes = (ts: string): Times|undefined => {

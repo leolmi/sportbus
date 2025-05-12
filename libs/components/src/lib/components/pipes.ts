@@ -1,17 +1,51 @@
-import { Pipe, PipeTransform } from '@angular/core';
-import { getTimeString, Person, Session, SessionOnDay, Shuttle, ShuttleDirection } from '@olmi/model';
+import { inject, Pipe, PipeTransform } from '@angular/core';
+import {
+  CalendarItem,
+  DAY,
+  getTimeString, isEmptyString, isToday,
+  Person,
+  Session, SessionContext,
+  SessionOnDay,
+  Shuttle,
+  ShuttleDirection, SPORTBUS_USER_OPTIONS_FEATURE
+} from '@olmi/model';
 import { keys as _keys, isNumber as _isNumber } from 'lodash';
-import { getGroupName, getPersonName, getPersonIcon } from './shuttles-utilities';
+import { getGroupName, getPersonName, getPersonIcon, isReadyOnDirection } from './shuttles-utilities';
 import { formatDate } from '@angular/common';
+import { AppUserOptions, SessionManager, SPORTBUS_I18N } from '@olmi/common';
+import { BehaviorSubject } from 'rxjs';
 
+@Pipe({
+  name: 'personDetails',
+  standalone: true
+})
+export class PersonDetailsPipe implements PipeTransform {
+
+  transform(prs: Person, context: SessionContext): string {
+    return prs.isDriver ?
+      (prs.group ? `driver & passenger of ${getGroupName(context, prs.group)}` : 'driver') :
+      (prs.group ? `passenger of ${getGroupName(context, prs.group)}` : 'simple passenger');
+  }
+}
+
+
+@Pipe({
+  name: 'dayTimes',
+  standalone: true
+})
+export class DayTimesPipe implements PipeTransform {
+  transform(item: CalendarItem): string {
+    return (item.start && item.end) ? `${getTimeString(item.start)} - ${getTimeString(item.end)}` : '';
+  }
+}
 
 @Pipe({
   name: 'groupName',
   standalone: true
 })
 export class GroupNamePipe implements PipeTransform {
-  transform(gcode: string, session: Session|undefined): string {
-    return getGroupName(session, gcode);
+  transform(gcode: string, context: SessionContext): string {
+    return getGroupName(context, gcode);
   }
 }
 
@@ -20,8 +54,8 @@ export class GroupNamePipe implements PipeTransform {
   standalone: true
 })
 export class PersonNamePipe implements PipeTransform {
-  transform(pcode: string, session: Session|undefined): string {
-    return getPersonName(session, pcode);
+  transform(pcode: string, context: SessionContext): string {
+    return getPersonName(context, pcode);
   }
 }
 
@@ -65,7 +99,16 @@ export class DateFormatPipe implements PipeTransform {
   }
 }
 
-
+@Pipe({
+  name: 'dayOfWeek',
+  standalone: true
+})
+export class DayOfWeekPipe implements PipeTransform {
+  i18n = inject(SPORTBUS_I18N);
+  transform(day: number): string {
+    return this.i18n.localize(DAY[day]);
+  }
+}
 
 @Pipe({
   name: 'isReadyDirection',
@@ -73,12 +116,7 @@ export class DateFormatPipe implements PipeTransform {
 })
 export class IsReadyDirectionPipe implements PipeTransform {
   transform(sod: SessionOnDay|undefined|null, direction: ShuttleDirection): boolean {
-    const passengers_map = sod?.passengersMap || {};
-    const eff_passengers = _keys(passengers_map).filter(a => passengers_map[a]);
-    const shuttles = (sod?.shuttles || []).filter(s => s.direction === direction);
-    const firstMissingPassenger = eff_passengers.find(a => !shuttles.find(s => s.passengers.includes(a)));
-    const firstMissingDriver = shuttles.find(s => !s.driver);
-    return !firstMissingPassenger && !firstMissingDriver;
+    return isReadyOnDirection(sod||undefined, direction);
   }
 }
 
@@ -107,3 +145,97 @@ export class PassengerTimePipe implements PipeTransform {
   }
 }
 
+/**
+ * valuta che l'utente sia temporaneo (presente solo sul on-day) e
+ * non inserito in alcuna navetta
+ */
+@Pipe({
+  name: 'isSodNotUsedPassenger',
+  standalone: true
+})
+export class IsSodNotUsedPassengerPipe implements PipeTransform {
+  transform(prs: Person, context: SessionContext): boolean {
+    const isSodUser = !!(context.sod?.persons||[]).find(p => p.code === prs.code);
+    const isInShuttle = !!(context.sod?.shuttles||[]).find(s =>
+      s.passengers.includes(prs.code) || s.driver === prs.code);
+    return isSodUser && !isInShuttle;
+  }
+}
+
+@Pipe({
+  name: 'isSodCalendarItem',
+  standalone: true
+})
+export class IsSodCalendarItemPipe implements PipeTransform {
+  transform(ci: CalendarItem, context: SessionContext): boolean {
+    return !!(context.sod?.calendar||[]).find(i => i.code === ci.code);
+  }
+}
+
+/**
+ * rileva i gruppi non più esistenti
+ */
+@Pipe({
+  name: 'isWrongGroup',
+  standalone: true
+})
+export class IsWrongGroupPipe implements PipeTransform {
+  transform(gcode: string, context: SessionContext): boolean {
+    return !(context.ses?.groups||[]).find(g => g.code === gcode);
+  }
+}
+
+
+/**
+ * mostra data e ora del messaggio
+ */
+@Pipe({
+  name: 'messageDateTime',
+  standalone: true
+})
+export class MessageDateTimePipe implements PipeTransform {
+  transform(date: number): string {
+    const d = new Date(date);
+    return isToday(d) ? d.toLocaleTimeString() : d.toLocaleString();
+  }
+}
+
+/**
+ * mostra l'owner del messaggio
+ */
+@Pipe({
+  name: 'messageOwner',
+  standalone: true
+})
+export class MessageOwnerPipe implements PipeTransform {
+  transform(owner: string): string {
+    return owner;
+  }
+}
+
+/**
+ * vero se la stringa è vuota
+ */
+@Pipe({
+  name: 'isEmptyString',
+  standalone: true
+})
+export class IsEmptyStringPipe implements PipeTransform {
+  transform(v: string|null|undefined): boolean {
+    return isEmptyString(v);
+  }
+}
+
+/**
+ * vero se l'utente corrisponde
+ */
+@Pipe({
+  name: 'iAm',
+  standalone: true
+})
+export class IAmPipe implements PipeTransform {
+  transform(name: string|null|undefined): boolean {
+    const o = AppUserOptions.getFeatures<any>(SPORTBUS_USER_OPTIONS_FEATURE);
+    return !!name && (name||'') === (o.userName||'');
+  }
+}

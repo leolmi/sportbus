@@ -7,7 +7,6 @@ export interface SessionDoc extends Document {
   readonly code: string;
   readonly name: string;
   readonly description: string;
-  readonly lastUpdate: number;
   readonly icon: string;
   readonly persons: Person[];
   readonly calendar: CalendarItem[];

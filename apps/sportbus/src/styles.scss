@@ -74,6 +74,9 @@ html, body {
   margin-right: var(--spb-padding);
 }
 
+.padding-left {
+  padding-left: var(--spb-padding);
+}
 .padding-bottom-2 {
   padding-bottom: calc(var(--spb-padding) * 2);
 }
@@ -86,6 +89,12 @@ html, body {
 
 .mat-icon {
   font-variant: none !important;
+
+  &.size-20 {
+    height: 20px;
+    width: 20px;
+    font-size: 20px;
+  }
 }
 
 .top-loading-bar {
@@ -104,6 +113,10 @@ html, body {
 
 .disabled {
   opacity: var(--spb-disabled-opacity);
+}
+
+.resize-none {
+  resize: none;
 }
 
 body {
@@ -222,16 +235,13 @@ button {
 .sportbus-page {
   .page-content {
     position: relative;
-    width: 100%;
-    max-width: 800px;
   }
 }
-.layout-narrow {
-  .sportbus-page {
-    .page-content {
 
-    }
-  }
+.max-width-800,
+.sportbus-page .page-content {
+  width: 100%;
+  max-width: 800px;
 }
 
 .page-editor {
@@ -244,6 +254,9 @@ button {
   top: 0;
 }
 
+.z-index-10 {
+  z-index: 10;
+}
 
 .grey-label {
   opacity: .5;
@@ -331,6 +344,7 @@ button {
 
   &.page-fill {
     width: 100%;
+    min-height: 100%;
   }
   &.page-padding {
     padding: calc(var(--spb-padding) * 5);
@@ -523,7 +537,8 @@ select {
   opacity: .5;
 
   &:hover {
-    opacity: 1;
+    opacity: 1 !important;
+    color: var(--spb-color-accent);
   }
 }
 

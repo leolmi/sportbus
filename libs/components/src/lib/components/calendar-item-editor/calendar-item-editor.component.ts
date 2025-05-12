@@ -5,14 +5,13 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { I18nDirective } from '@olmi/common';
 import { DialogEditorBase } from '../editor.base';
-import { CalendarItem, DAY, getTimeMlsValue, getTimeString, Group } from '@olmi/model';
+import { CalendarItem, DAY, getTimeMlsValue, getTimeString } from '@olmi/model';
 import { NgxMaskDirective } from 'ngx-mask';
 import { FormsModule } from '@angular/forms';
 import { MatLabel } from '@angular/material/form-field';
-import { map } from 'rxjs';
 
 @Component({
-  selector: 'day-editor',
+  selector: 'calendar-item-editor',
   imports: [
     CommonModule,
     FlexModule,
@@ -23,12 +22,12 @@ import { map } from 'rxjs';
     MatLabel,
     I18nDirective,
   ],
-  templateUrl: './day-editor.component.html',
-  styleUrl: './day-editor.component.scss',
+  templateUrl: './calendar-item-editor.component.html',
+  styleUrl: './calendar-item-editor.component.scss',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DayEditorComponent extends DialogEditorBase<CalendarItem> {
+export class CalendarItemEditorComponent extends DialogEditorBase<CalendarItem> {
   day = '';
   start = '';
   end = '';
@@ -39,14 +38,13 @@ export class DayEditorComponent extends DialogEditorBase<CalendarItem> {
     this.start = getTimeString(this.value.start);
     this.end = getTimeString(this.value.end);
   }
-
-  override validate = (item: CalendarItem) => !!item.target && !!item.start && !!item.end;
+  override validate = (item: CalendarItem) => !!item.target && !!item.group && !!item.start && !!item.end;
   override applyValue = (item: CalendarItem) => {
-    this.manager.updateSession((ses) => {
-      let xci =  ses.calendar.find(ci => ci.dayOfWeek === item.dayOfWeek && ci.group === item.group);
+    this.manager.updateSessionOnDay((sod) => {
+      let xci =  sod.calendar.find(ci => ci.code === item.code);
       if (!xci) {
         xci = new CalendarItem(item);
-        ses.calendar.push(xci);
+        sod.calendar.push(xci);
       } else {
         this.extend(xci, item);
       }

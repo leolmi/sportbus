@@ -13,6 +13,7 @@ import { AppUserOptions } from '@olmi/common';
 import RESOURCES from '../../../../../resources';
 import KEYS from '../../../../../resources.keys';
 import { BehaviorSubject } from 'rxjs';
+import { DOCUMENT } from '@angular/common';
 
 export const getNavigatorCompatibleLocale = (ul: string): Locale => {
   let xl = Locales.find(l => l === ul);
@@ -21,16 +22,26 @@ export const getNavigatorCompatibleLocale = (ul: string): Locale => {
   return xl || DEFAULT_LOCALE;
 }
 
-export class i18n {
+const getLocale = (): Locale => {
+  const o = AppUserOptions.getFeatures(SPORTBUS_USER_OPTIONS_FEATURE, { locale: '' });
+  return getNavigatorCompatibleLocale(o.locale);
+}
 
+export const dateLocaleFactory = () => {
+  const locale = getLocale();
+  return `${locale.toLowerCase()}-${locale.toUpperCase()}`;
+}
+
+export class i18n {
+  private readonly doc = inject(DOCUMENT);
   locale$: BehaviorSubject<Locale>;
 
   constructor() {
-    const o = AppUserOptions.getFeatures(SPORTBUS_USER_OPTIONS_FEATURE, { locale: '' });
-    const locale = getNavigatorCompatibleLocale(o.locale);
+    const locale = getLocale();
     this.locale$ = new BehaviorSubject<Locale>(locale);
     // imposta la localizzazione globale
     (<any>window)['LOCALIZE'] = this.localize;
+    this.doc.documentElement.lang = locale;
   }
 
   get locale() {

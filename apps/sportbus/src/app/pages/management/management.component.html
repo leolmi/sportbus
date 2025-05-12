@@ -28,15 +28,23 @@
         <div class="management-section-title">Commands</div>
         <div class="management-row spb-color-hover" fxLayout="row" fxLayoutAlign="start center">
           <div fxFlex>Logout management</div>
-          <button mat-flat-button color="danger" (click)="logout()">
+          <button mat-flat-button (click)="logout()">
             logout
           </button>
         </div>
         <div class="management-row spb-color-hover" fxLayout="row" fxLayoutAlign="start center">
           <div fxFlex>Delete all session-on-day</div>
-          <button mat-flat-button color="danger" (click)="deleteAllSod()">
+          <button mat-flat-button (click)="deleteAllSod()">
             delete
           </button>
+        </div>
+        <div class="management-row spb-color-hover" fxLayout="row" fxLayoutAlign="start center">
+          <div fxFlex>Debug mode</div>
+          @if (state.isDebugMode$|async) {
+            <button mat-flat-button (click)="toggleDebug()">ON</button>
+          } @else {
+            <button mat-raised-button (click)="toggleDebug()">OFF</button>
+          }
         </div>
       </div>
 
@@ -81,7 +89,7 @@
                   </button>
                   <button mat-menu-item (click)="deleteSessionSods(ses)">
                     <mat-icon>delete_sweep</mat-icon>
-                    <span>delete session-no-day data</span>
+                    <span>delete session-on-day data</span>
                   </button>
                 </mat-menu>
               } @else {
@@ -96,7 +104,7 @@
                   <mat-icon>delete</mat-icon>
                 </button>
                 <button mat-icon-button
-                        matTooltip="delete session-no-day data"
+                        matTooltip="delete session-on-day data"
                         (click)="deleteSessionSods(ses)">
                   <mat-icon>delete_sweep</mat-icon>
                 </button>

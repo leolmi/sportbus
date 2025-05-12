@@ -1,3 +1,21 @@
 <div class="daily-chat-container">
-  <!-- TODO: daily chat -->
+  @for (msg of messages$|async; track $index) {
+    <div class="message"
+         [class.mine]="msg.owner|iAm"
+         fxLayout="column">
+      <div class="message-header" fxLayout="row" fxLayoutAlign="start center">
+        <div class="message-time">{{msg.date|messageDateTime}}</div>
+        <div class="message-owner margin-left-2">{{msg.owner|messageOwner}}</div>
+      </div>
+      <div class="message-content" fxFlex>{{msg.text}}</div>
+    </div>
+  }
+  @if (incrementable$|async) {
+    <button class="increment-button"
+            mat-icon-button
+            (click)="incrementTop()">
+      <mat-icon>keyboard_double_arrow_down</mat-icon>
+    </button>
+  }
+  <div></div>
 </div>

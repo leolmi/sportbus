@@ -2,10 +2,11 @@ import KEYS from './resources.keys';
 
 const RESOURCES = {
   it: {
+    "account": "io",
     "back": "indietro",
     "Cancel": "Annulla",
     "Calendar": "Calendario attività gruppi",
-    "Close this session": "Chiudi questa sessione",
+    "Close the session": "Chiudi la sessione",
     "create": "crea",
     "Day": "Giorno",
     "Debug mode": "Modalità debug",
@@ -22,22 +23,28 @@ const RESOURCES = {
     "login": "accedi",
     "management": "gestione dati",
     "Management Access": "Accesso Gestione",
+    "modify item": "modifica elemento",
+    "new item": "nuovo elemento",
     "none": "nessuno",
     "Person": "Soggetto",
     "Persons": "Soggetti",
+    "remove item": "elimina elemento",
+    "remove person": "elimina persona",
     "Restore default settings": "Ripristina le opzioni iniziali",
     "session name": "nome della sessione",
     "session not accessible": "sessione non accessibile",
     "Session settings": "Impostazioni",
     "Session shuttles": "Navette",
-    "Share this session": "Condividi questa sessione",
+    "Share the session": "Condividi sessione",
     "Show infos": "Mostra informazioni aggiuntive",
     "Start time": "Inizio",
     "Switch to dark theme": "Passa al tema scuro",
     "Switch to light theme": "Passa al tema chiaro",
     "Type access code\nor create new session": "digita un codice\no crea una nuova sessione",
+    "undefined": "non definito",
     "Welcome!": "Benvenuto!",
     "what you need to know": "cosa devi sapere",
+    "your name is undefined": "scegliere un nome valido",
     "sunday": "domenica",
     "monday": "lunedì",
     "tuesday": "martedì",
@@ -76,6 +83,9 @@ const RESOURCES = {
     [KEYS._person_driver]: "guidatore",
     [KEYS._person_passenger]: "passeggero",
     [KEYS._person_mixed]: "guidatore o passeggero",
+    [KEYS._no_shuttle_on_day]: "per questo giorno non è neccessaria alcuna navetta",
+    [KEYS._add_shuttle_always]: "aggiungi comunque una navetta",
+    [KEYS._my_name_title]: "il mio nome nei messaggi"
   }
 }
 export default RESOURCES;

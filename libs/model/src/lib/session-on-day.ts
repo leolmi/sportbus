@@ -1,25 +1,21 @@
-import { Person } from './person';
 import { Shuttle } from './shuttle';
-import { LastUpdate } from './last-update';
 import { Dictionary } from './types';
+import { SessionBase } from './session';
+import { Message } from './message';
 
 /**
- * sessione giornaliera
+ * SESSIONE GIORNALIERA
  */
-export class SessionOnDay implements LastUpdate {
+export class SessionOnDay extends SessionBase {
   constructor(i?: Partial<SessionOnDay>) {
-    this.lu = i?.lu||0;
-    this.date = i?.date||0;
-    this.session = i?.session||'';
-    this.passengersMap = i?.passengersMap||{};
-    this.persons = (i?.persons||[]).map(p => new Person(p));
-    this.shuttles = (i?.shuttles||[]).map(s => new Shuttle(s));
+    super(i);
+    this.date = i?.date || 0;
+    this.session = i?.session || '';
+    this.passengersMap = i?.passengersMap || {};
+    this.shuttles = (i?.shuttles || []).map(s => new Shuttle(s));
+    this.messages = (i?.messages || []).map(m => new Message(m));
   }
 
-  /**
-   * lust-update time
-   */
-  lu: number;
   /**
    * data di riferimento
    */
@@ -29,10 +25,6 @@ export class SessionOnDay implements LastUpdate {
    */
   session: string;
   /**
-   * elenco persone solo per questo giorno di sessione
-   */
-  persons: Person[];
-  /**
    * mappa stato passeggeri
    */
   passengersMap: Dictionary<boolean>;
@@ -40,4 +32,8 @@ export class SessionOnDay implements LastUpdate {
    * elenco navette
    */
   shuttles: Shuttle[];
+  /**
+   * messaggi della sessione giornaliera
+   */
+  messages: Message[];
 }

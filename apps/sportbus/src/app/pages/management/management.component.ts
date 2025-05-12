@@ -4,6 +4,7 @@ import { FlexModule } from '@angular/flex-layout';
 import { DateFormatPipe, EditorBase, MainToolbarComponent } from '@olmi/components';
 import { MatButton, MatButtonModule } from '@angular/material/button';
 import {
+  LocalContext,
   NotificationType,
   Session,
   SPORTBUS_USER_OPTIONS_FEATURE,
@@ -113,6 +114,10 @@ export class ManagementComponent extends EditorBase {
           this.notifier.notify('cannot delete session-on-days', NotificationType.warning);
         }
       }));
+  }
+
+  toggleDebug() {
+    LocalContext.toggleLevel('debug');
   }
 
   deleteSession(ses: Session) {

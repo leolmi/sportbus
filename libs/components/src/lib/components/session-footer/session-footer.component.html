@@ -1,0 +1,26 @@
+<div class="session-footer margin-bottom-2">
+  @if (manager.dayHasCalendarItems$|async) {
+    <div class="chat-input-container" fxLayout="row" fxLayoutAlign="start center">
+      <div fxFlex></div>
+      <div class="input-container max-width-800">
+        <textarea [value]="manager.tempMessage$|async"
+                  [disabled]="!(manager.userName$|async)"
+                  [placeholder]="manager.chatPlaceholder$|async"
+                  class="spb-basic-input resize-none full-width"
+                  (input)="manager.updateTempMessage($event)"></textarea>
+        <div class="button-send-container" fxLayout="row" fxLayoutAlign="start center">
+          <button mat-icon-button
+                  class="send-button spb-color-accent"
+                  [disabled]="manager.tempMessage$|async|isEmptyString"
+                  (click)="manager.send()">
+            <mat-icon>send</mat-icon>
+          </button>
+
+        </div>
+      </div>
+      <div fxFlex></div>
+    </div>
+  }
+  <div class="click-content full-width text-align-center  z-index-10"
+       (click)="goToConfiguration()" spb-i18n>{{KEYS._session_configure}}</div>
+</div>

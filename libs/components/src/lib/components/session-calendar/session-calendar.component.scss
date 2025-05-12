@@ -1,7 +1,5 @@
 .calendar {
   padding: var(--spb-padding);
-  //background-color: var(--spb-color-foreground);
-  //color: var(--spb-color-background);
 }
 
 .calendar-item {
@@ -17,5 +15,13 @@
   .item-end {
     font-weight: bold;
     width: 60px;
+  }
+  .item-end {
+    margin-right: calc(2 * var(--spb-padding));
+  }
+  .item-new {
+    opacity: .4;
+    font-style: italic;
+    font-size: .8em;
   }
 }

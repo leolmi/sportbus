@@ -24,6 +24,7 @@ body {
 
   --spb-schemas-toolbar-height: 76px;
   --spb-menu-separator-size: 10px;
+  --spb-footer-size: 126px;
 
   --spb-art-backgroud-color-1: gold;
   --spb-art-backgroud-color-2: #fff;
@@ -34,4 +35,12 @@ body {
   //--spb-art-backgroud-color-2: #f15bb5;
   //--spb-art-backgroud-color-3: #00bbf9;
   //--spb-art-backgroud-color-4: #00f5d4;
+
+  &.layout-narrow {
+    --spb-footer-size: 100px;
+
+    &.layout-compact {
+      --spb-footer-size: 70px;
+    }
+  }
 }

@@ -8,7 +8,7 @@
   <essential-toolbar></essential-toolbar>
 </div>
 <div class="page-editor settings">
-  @if (manager.session$|async; as ses) {
+  @if (manager.context$|async; as ctx) {
 
     <div class="settings-section"
          fxLayout="row" fxLayoutAlign="space-around center">
@@ -23,14 +23,36 @@
               class="margin-horz"
               (click)="manager.share()">
         <mat-icon class="compact-hidden">share</mat-icon>
-        <span spb-i18n>Share this session</span>
+        <span spb-i18n>Share the session</span>
       </button>
       <button mat-flat-button
               class="margin-horz"
               (click)="manager.close()">
         <mat-icon class="compact-hidden">logout</mat-icon>
-        <span spb-i18n>Close this session</span>
+        <span spb-i18n>Close the session</span>
       </button>
+      @if (state.isDebugMode$|async) {
+        <button mat-flat-button
+                class="margin-horz"
+                (click)="manager.log()">
+          <mat-icon class="compact-hidden">bug_report</mat-icon>
+          <span spb-i18n>Log structure</span>
+        </button>
+      }
+    </div>
+
+    <!-- IO -->
+    <div class="settings-section">
+      <div class="settings-section-title" fxLayout="row" fxLayoutAlign="start center">
+        <mat-icon class="margin-right">account_circle</mat-icon>
+        <span fxFlex class="capitalize" spb-i18n>account</span>
+      </div>
+      <!-- il mio nome -->
+      <mat-label spb-i18n>{{KEYS._my_name_title}}</mat-label>
+      <input [value]="manager.userName$|async"
+             class="spb-basic-input big-input full-width margin-bottom-2"
+             [placeholder]="'undefined'|i18n"
+             (change)="manager.updateUserName($event, 'target.value')">
     </div>
 
     <!-- GROUPS -->
@@ -42,7 +64,7 @@
           <mat-icon>add</mat-icon>
         </button>
       </div>
-      @for (grp of ses.groups; track $index) {
+      @for (grp of (ctx.ses?.groups||[]); track $index) {
         <div class="panel-item" fxLayout="row" fxLayoutAlign="start center">
           <label class="label-strong" fxFlex>{{grp.name}}</label>
           <div class="panel-item-actions" fxLayout="row" fxLayoutAlign="start center">
@@ -71,7 +93,7 @@
           </button>
         }
       </div>
-      @for (grp of ses.groups; track $index) {
+      @for (grp of (ctx.ses?.groups||[]); track $index) {
         <div class="panel-item group-title">{{grp.name}}</div>
         @for (day of weekDays; track $index) {
           <div class="panel-item day-item"
@@ -157,6 +179,23 @@
         }
       }
     </div>
+    <div class="settings-section">
+      @for (item of (ctx.ses?.calendar||[]); track $index) {
+        @if (item.group|isWrongGroup:ctx) {
+          <div class="panel-item day-item padding-left" fxLayout="row" fxLayoutAlign="start center">
+            <span class="label-strong day-name margin-right-2">{{item.dayOfWeek|dayOfWeek}}</span>
+            <span class="day-times">{{item|dayTimes}}</span>
+            <span class="day-destination" fxFlex>{{item.target}}</span>
+            <button mat-icon-button
+                    [matTooltip]="KEYS._day_clear|i18n"
+                    (click)="deleteCalendarItem($index)">
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </div>
+        }
+      }
+    </div>
+
 
     <!-- PERSONS -->
     <div class="settings-section">
@@ -175,7 +214,7 @@
             <div class="panel-item" fxLayout="row" fxLayoutAlign="start center">
               <label fxFlex fxLayout="row" fxLayoutAlign="start center">
                 <span class="label-strong" fxFlex>{{prs.name}}</span>
-                <span class="person-details">{{prs|personDetails:manager.session}}</span>
+                <span class="person-details">{{prs|personDetails:ctx}}</span>
               </label>
               <button mat-icon-button (click)="editPerson(prs)">
                 <mat-icon>edit</mat-icon>

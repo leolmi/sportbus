@@ -6,7 +6,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { I18nDirective, I18nPipe } from '@olmi/common';
 import { DialogEditorBase } from '../editor.base';
-import { Group } from '@olmi/model';
+import { Group, Person } from '@olmi/model';
+import { map } from 'rxjs';
 
 @Component({
   selector: 'group-editor',
@@ -24,6 +25,7 @@ import { Group } from '@olmi/model';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GroupEditorComponent extends DialogEditorBase<Group> {
+  override validate = (g: Group) => !!g.name;
   override applyValue = (grp: Group) => {
     this.manager.updateSession((ses) => {
       const sg = ses.groups.find(g => g.code === grp.code);

@@ -3,14 +3,15 @@ import { CommonModule } from '@angular/common';
 import { FlexModule } from '@angular/flex-layout';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { PassengerTimePipe, GroupNamePipe, PersonNamePipe, TimeToStringPipe, PersonIconPipe } from '../pipes';
-import { EditorBase } from '@olmi/components';
-import { Person, Shuttle, use } from '@olmi/model';
-import { BehaviorSubject, filter } from 'rxjs';
+import { GroupNamePipe, PassengerTimePipe, PersonIconPipe, PersonNamePipe, TimeToStringPipe } from '../pipes';
+import { EditorBase, isReadyOnDirection } from '@olmi/components';
+import { Person, SessionContext, SessionOnDay, Shuttle, use } from '@olmi/model';
+import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
 import { remove as _remove } from 'lodash';
 import { addShuttlePerson, getPersons, withShuttle } from '../shuttles-utilities';
 import { ShuttleTimesComponent } from '../shuttle-times/shuttle-times.component';
 import { MatDialogConfig } from '@angular/material/dialog';
+import { I18nDirective } from '@olmi/common';
 
 @Component({
   selector: 'shuttle-editor',
@@ -24,6 +25,7 @@ import { MatDialogConfig } from '@angular/material/dialog';
     TimeToStringPipe,
     PassengerTimePipe,
     PersonIconPipe,
+    I18nDirective
   ],
   templateUrl: './shuttle-editor.component.html',
   styleUrl: './shuttle-editor.component.scss',
@@ -34,6 +36,11 @@ export class ShuttleEditorComponent extends EditorBase {
   shuttle$: BehaviorSubject<Shuttle|undefined>;
   menuPersons$: BehaviorSubject<Person[]>;
   asDriver$: BehaviorSubject<boolean>;
+  isDirectionOk$: Observable<boolean>;
+  allowAddAll$: BehaviorSubject<boolean>;
+  passengers$: Observable<Person[]>;
+  drivers$: Observable<Person[]>;
+  hasPassengers$: Observable<boolean>;
 
   @Input()
   set shuttle(s: Shuttle|undefined|null) {
@@ -45,17 +52,50 @@ export class ShuttleEditorComponent extends EditorBase {
     this.menuPersons$ = new BehaviorSubject<Person[]>([]);
     this.shuttle$ = new BehaviorSubject<Shuttle|undefined>(undefined);
     this.asDriver$ = new BehaviorSubject<boolean>(false);
+    this.allowAddAll$ = new BehaviorSubject<boolean>(false);
+
+    this.isDirectionOk$ = combineLatest([this.manager.sessionOnDay$, this.shuttle$])
+      .pipe(map(([sod, s]: [SessionOnDay|undefined, Shuttle|undefined]) => isReadyOnDirection(sod, s?.direction)))
+
+    this.passengers$ = combineLatest([this.manager.context$, this.shuttle$])
+      .pipe(map(([ctx, sht]: [SessionContext, Shuttle|undefined]) => getPersons(ctx, false, sht)));
+    this.drivers$ = this.manager.context$.pipe(map(ctx => getPersons(ctx, true)));
+
+    this.hasPassengers$ = this.passengers$.pipe(map(prss => prss.length>0));
   }
 
   openPersonsMenu(trigger: MatMenuTrigger, driver: boolean) {
     this.asDriver$.next(driver);
-    use(this.manager.sessionOnDay$, (sod) =>
-      this.menuPersons$.next(getPersons(this.manager.session, driver, sod, this.shuttle$.value)));
+    this.allowAddAll$.next(false);
+    if (driver) {
+      use(this.drivers$, prss => {
+        this.menuPersons$.next(prss);
+      });
+    } else {
+      const actual = (this.shuttle$.value?.passengers || []).length;
+      use(this.passengers$, prss => {
+        this.allowAddAll$.next(prss.length > 0 && prss.length <= (4 - actual));
+        this.menuPersons$.next(prss);
+      });
+    }
   }
 
   addPerson(prs: Person) {
     this.manager.updateSessionOnDay((sod) =>
       addShuttlePerson(sod, prs, this.shuttle$.value, this.asDriver$.value));
+  }
+
+  addAllPersons(prss: Person[]) {
+    this.manager.updateSessionOnDay((sod) => {
+      return withShuttle(sod, this.shuttle$.value, (sht) => {
+        prss.forEach(p => {
+          if (!sht.passengers.includes(p.code)) {
+            sht.passengers.push(p.code);
+          }
+        });
+        return true;
+      })
+    });
   }
 
   removeShuttlePassenger(code: string) {
@@ -72,22 +112,9 @@ export class ShuttleEditorComponent extends EditorBase {
   }
 
   editTimes() {
-    this._dialog
-      .open(ShuttleTimesComponent, <MatDialogConfig>{
-        data: this.shuttle$.value,
-        width: '500px',
-      })
-      .afterClosed()
-      .pipe(filter(r => !!r))
-      .subscribe((r: Shuttle) => {
-        this.manager.updateSessionOnDay((sod) => {
-          const sh = sod.shuttles.find(s => s.code === r.code);
-          if (sh) {
-            sh.passengers = [...r.passengers];
-            sh.passengersTimesMap = { ...r.passengersTimesMap };
-          }
-          return !!sh;
-        });
-      });
+    this._dialog.open(ShuttleTimesComponent, <MatDialogConfig>{
+      data: this.shuttle$.value,
+      width: '500px',
+    });
   }
 }

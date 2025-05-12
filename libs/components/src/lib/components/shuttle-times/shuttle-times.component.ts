@@ -1,15 +1,27 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FlexModule } from '@angular/flex-layout';
-import { EditorBase } from '@olmi/components';
-import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { DialogEditorBase } from '@olmi/components';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { BehaviorSubject, map, Observable, of } from 'rxjs';
-import { Dictionary, getTimeMlsValue, getTimeString, move, Person, Session, Shuttle } from '@olmi/model';
+import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
+import {
+  Dictionary,
+  getTimeMlsValue,
+  getTimeString,
+  move,
+  Person,
+  Session,
+  SessionContext,
+  Shuttle
+} from '@olmi/model';
 import { getPersonName } from '../shuttles-utilities';
 import { TimeToStringPipe } from '../pipes';
 import { MatIcon } from '@angular/material/icon';
 import { cloneDeep as _clone, isNumber, reduce as _reduce } from 'lodash';
+import { I18nDirective } from '@olmi/common';
+import { FormsModule } from '@angular/forms';
+import { NgxMaskDirective } from 'ngx-mask';
 
 class PassengerTimeWrapper {
   passenger: Person|undefined;
@@ -24,34 +36,27 @@ class PassengerTimeWrapper {
     MatDialogModule,
     MatButtonModule,
     TimeToStringPipe,
-    MatIcon
+    MatIcon,
+    I18nDirective,
+    FormsModule,
+    NgxMaskDirective
   ],
   templateUrl: './shuttle-times.component.html',
   styleUrl: './shuttle-times.component.scss',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ShuttleTimesComponent extends EditorBase {
-  shuttle = <Shuttle|undefined>inject(MAT_DIALOG_DATA);
+export class ShuttleTimesComponent extends DialogEditorBase<Shuttle> {
   title$: Observable<string>;
   items$: BehaviorSubject<PassengerTimeWrapper[]>
-  subTitle$: BehaviorSubject<string>;
-  result$: Observable<Shuttle>;
+  subTitle$: Observable<string>;
 
   constructor() {
     super();
-    this.title$ = this.manager.session$.pipe(map(ses =>
-      getTile(this.shuttle, ses)));
-    this.subTitle$ = new BehaviorSubject<string>(this.shuttle?.target||'');
-
-    this.items$ = new BehaviorSubject<PassengerTimeWrapper[]>(getItems(this.shuttle, this.manager.session$.value));
-    this.result$ = this.items$.pipe(map(items => {
-      const sh = _clone(this.shuttle||new Shuttle());
-      sh.passengers = items.map(i => i.passenger?.code||'');
-      sh.passengersTimesMap = _reduce(items, (m, i) =>
-        ({ ...m, [i.passenger?.code||'']: i.time }), <Dictionary<number>>{});
-      return sh;
-    }))
+    this.title$ = this.value$.pipe(map((sht) => `${getTimeString(sht?.time||0)}  ${sht?.target||''}`));
+    this.subTitle$ = combineLatest([this.manager.context$, this.value$])
+      .pipe(map(([ctx, sht]: [SessionContext, Shuttle|undefined]) => getPersonName(ctx, sht?.driver||'')));
+    this.items$ = new BehaviorSubject<PassengerTimeWrapper[]>(getItems(this.value$.value, this.manager.session$.value));
   }
 
   updateItems(handler: (items: PassengerTimeWrapper[], item?: PassengerTimeWrapper) => any, index?: number) {
@@ -66,18 +71,28 @@ export class ShuttleTimesComponent extends EditorBase {
   }
 
   updateTime(e: any, index: number) {
-    const v = e.target.value||'';
+    const v = e.target.value || '';
     const time_value = getTimeMlsValue(v);
-    if (time_value>0) {
+    if (time_value > 0) {
       this.updateItems((items, item) => {
         if (item) item.time = time_value;
       }, index);
     }
   }
-}
 
-const getTile = (shuttle: Shuttle|undefined, session: Session|undefined) =>
-  `${getTimeString(shuttle?.time||0)}  (${getPersonName(session, shuttle?.driver||'')})`
+  override applyValue = (sht: Shuttle) => {
+    const items = this.items$.value;
+    this.manager.updateSessionOnDay((sod) => {
+      const sh = sod.shuttles.find(s => s.code === sht.code);
+      if (sh) {
+        sh.passengers = items.map(i => i.passenger?.code||'');
+        sh.passengersTimesMap = _reduce(items, (m, i) =>
+          ({ ...m, [i.passenger?.code||'']: i.time }), <Dictionary<number>>{});
+      }
+      return !!sh;
+    });
+  }
+}
 
 const getItems = (shuttle: Shuttle|undefined, session: Session|undefined): PassengerTimeWrapper[] => {
   if (!shuttle || !session) return [];

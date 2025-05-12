@@ -1,7 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { Person } from './common.schema';
-
+import { CalendarItem, Person } from './common.schema';
 
 
 @Schema()
@@ -43,6 +42,25 @@ class Shuttle extends Document {
   passengersTimesMap: any;
 }
 
+@Schema()
+class Message extends Document {
+  /**
+   * data-ora del messaggio
+   */
+  @Prop({ required: true })
+  date: number;
+  /**
+   * proprietario
+   */
+  @Prop({ required: true })
+  owner: string;
+  /**
+   * testo
+   */
+  @Prop()
+  text: string;
+}
+
 
 @Schema()
 class SessionOnDay extends Document {
@@ -67,6 +85,11 @@ class SessionOnDay extends Document {
   @Prop()
   persons: Person[];
   /**
+   * calendar
+   */
+  @Prop()
+  calendar: CalendarItem[];
+  /**
    * mappa dei passeggeri presenti
    */
   @Prop({ type: Object })
@@ -76,6 +99,11 @@ class SessionOnDay extends Document {
    */
   @Prop()
   shuttles: Shuttle[];
+  /**
+   * messaggi
+   */
+  @Prop()
+  messages: Message[];
 }
 
 export const SessionOnDaySchema = SchemaFactory.createForClass(SessionOnDay);

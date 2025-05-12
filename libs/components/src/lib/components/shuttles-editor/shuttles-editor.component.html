@@ -1,0 +1,28 @@
+<div class="shuttles">
+  @if (needShuttles$|async) {
+    <div class="shuttles-container" [fxLayout]="shuttlesLayout$|async">
+      <div class="shuttles-column" fxLayout="column" fxFlex>
+        <div class="shuttle-column-header" fxLayout="column">
+          <div class="direction"
+               [class.ready]="manager.sessionOnDay$|async|isReadyDirection:'A'"
+               spb-i18n>{{KEYS._session_to_destination}}</div>
+<!--          <shuttle-errors direction="A"></shuttle-errors>-->
+        </div>
+        @for (shA of shuttles$|async|shuttleType:'A'; track $index) {
+          <shuttle-editor [shuttle]="shA"></shuttle-editor>
+        }
+      </div>
+      <div class="shuttles-column spb-background-ghost" fxLayout="column" fxFlex>
+        <div class="shuttle-column-header" fxLayout="column">
+          <div class="direction"
+               [class.ready]="manager.sessionOnDay$|async|isReadyDirection:'R'"
+               spb-i18n>{{KEYS._session_back_home}}</div>
+<!--          <shuttle-errors direction="R"></shuttle-errors>-->
+        </div>
+        @for (shR of shuttles$|async|shuttleType:'R'; track $index) {
+          <shuttle-editor [shuttle]="shR"></shuttle-editor>
+        }
+      </div>
+    </div>
+  }
+</div>

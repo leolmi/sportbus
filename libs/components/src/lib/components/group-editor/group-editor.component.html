@@ -5,12 +5,14 @@
       <!-- name -->
       <input [value]="grp.name||''"
              class="spb-basic-input big-input full-width margin-bottom-2"
-             (input)="updateValue$(value$, $event, 'name','target.value')">
+             (input)="updateValue($event, 'name','target.value')">
     }
   </div>
 </div>
 <mat-dialog-actions>
   <div fxFlex></div>
-  <button mat-flat-button mat-dialog-close spb-i18n>Ok</button>
+  <button mat-flat-button
+          [disabled]="invalid$|async"
+          (click)="apply()" spb-i18n>Ok</button>
   <button mat-button mat-dialog-close spb-i18n>Cancel</button>
 </mat-dialog-actions>

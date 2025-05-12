@@ -1,0 +1,54 @@
+<!-- chi c'è -->
+@if (manager.context$|async; as ctx) {
+  <div class="persons-list">
+    @if (passengersMap$|async; as psgMap) {
+      @for (psg of passengers$|async; track $index) {
+        <div class="person-selector"
+             fxLayout="row" fxLayoutAlign="start center"
+             (click)="togglePassenger(psg)"
+             [class.present]="psgMap[psg.code]==='p'"
+             [class.absent]="psgMap[psg.code]==='a'"
+             [class.ready]="psgMap[psg.code]==='r'"
+             [class.unknown]="!psgMap[psg.code]">
+          <span class="text">{{psg.name}}</span>
+          @if (manager.sessionOnDay$|async|activeDirections:psg; as directions) {
+            <mat-icon>{{ICON_BY_DIRECTIONS[directions]}}</mat-icon>
+          } @else {
+            <mat-icon>{{ICON_BY_CODE[psgMap[psg.code]]||UNKNOWN_ICON}}</mat-icon>
+          }
+          @if (psg.group) {
+            <div class="passenger-group">{{psg.group|groupName:ctx}}</div>
+          }
+          @if (psg|isSodNotUsedPassenger:ctx) {
+            <div class="delete-person-button" fxLayout="row" fxLayoutAlign="center center">
+              <mat-icon class="as-button"
+                        [matTooltip]="'remove person'|i18n"
+                        (click)="removeSodPerson(psg)">cancel</mat-icon>
+            </div>
+          }
+        </div>
+      }
+    }
+    <div class="passenger-add"
+         fxLayout="row" fxLayoutAlign="center center"
+         matTooltip="add new passenger"
+         (click)="addPassenger()">
+      <mat-icon>person_add</mat-icon>
+    </div>
+  </div>
+  <div class="persons-list sod-drivers-list">
+    @for (drv of sodDrivers$|async; track $index) {
+      <div class="person-selector" fxLayout="row" fxLayoutAlign="start center">
+        <mat-icon class="icon-prefix">sports_motorsports</mat-icon>
+        <span class="text">{{drv.name}}</span>
+        @if (drv|isSodNotUsedPassenger:ctx) {
+          <div class="delete-person-button" fxLayout="row" fxLayoutAlign="center center">
+            <mat-icon class="as-button"
+                      [matTooltip]="'remove person'|i18n"
+                      (click)="removeSodPerson(drv)">cancel</mat-icon>
+          </div>
+        }
+      </div>
+    }
+  </div>
+}

@@ -1,5 +1,42 @@
 .daily-chat-container {
-  min-height: 100px;
-  //background-color: var(--spb-color-foreground);
+  height: 100%;
+
+  border-left: var(--spb-color-ghost) var(--spb-padding) solid;
   //color: var(--spb-color-background);
+}
+
+
+
+
+.message {
+  padding-bottom: calc(2 * var(--spb-padding));
+
+  &.mine {
+    color: var(--spb-color-accent);
+  }
+
+  .message-header {
+    font-style: italic;
+    opacity: .7;
+    font-size: .8em;
+
+    .message-time {
+
+    }
+    .message-owner {
+
+    }
+  }
+  .message-content {
+    font-weight: bold;
+    font-size: 1.2em;
+    white-space: pre-wrap;
+  }
+}
+
+.increment-button {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  color: var(--spb-color-accent);
 }

@@ -1,3 +1,4 @@
+export * from './lib/components/calendar-item-editor/calendar-item-editor.component';
 export * from './lib/components/confirm-dialog/confirm-dialog.component';
 export * from './lib/components/daily-chat/daily-chat.component';
 export * from './lib/components/day-editor/day-editor.component';
@@ -8,10 +9,14 @@ export * from './lib/components/info-dialog/info-dialog.component';
 export * from './lib/components/main-toolbar/main-toolbar.component';
 export * from './lib/components/pipes';
 export * from './lib/components/person-editor/person-editor.component';
+export * from './lib/components/persons-editor/persons-editor.component';
 export * from './lib/components/shuttle-editor/shuttle-editor.component';
+export * from './lib/components/shuttles-editor/shuttles-editor.component';
 export * from './lib/components/session-calendar/session-calendar.component';
 export * from './lib/components/session-editor/session-editor.component';
+export * from './lib/components/session-footer/session-footer.component';
 export * from './lib/components/session-header/session-header.component';
 export * from './lib/components/settings-editor/settings-editor.component';
 export * from './lib/components/essential-toolbar/essential-toolbar.component';
+export * from './lib/components/shuttles-utilities';
 

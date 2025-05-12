@@ -2,7 +2,7 @@ import { Component, inject, OnDestroy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogConfig, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { Router, RouterModule } from '@angular/router';
 import { SPORTBUS_API, SPORTBUS_I18N, SPORTBUS_MANAGER, SPORTBUS_NOTIFIER, SPORTBUS_STATE } from '@olmi/common';
-import { BehaviorSubject, filter, Subject } from 'rxjs';
+import { BehaviorSubject, filter, map, Observable, of, Subject } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { ConfirmDialogUtility } from './confirm-dialog/confirm-dialog.component';
 import { cloneDeep as _clone, extend as _extend, get as _get, set as _set } from 'lodash';
@@ -29,6 +29,7 @@ export class EditorBase implements OnDestroy {
   readonly state = inject(SPORTBUS_STATE);
   readonly manager = inject(SPORTBUS_MANAGER);
 
+  invalid$: Observable<boolean> = of(true);
   handleMenu = false;
   handleInfo = false;
 
@@ -51,13 +52,6 @@ export class EditorBase implements OnDestroy {
       .subscribe(r => handler(<T>r));
   }
 
-  protected updateValue$(o$: BehaviorSubject<any>, e: any, prp: string, path?: string) {
-    const o = _clone(o$.value);
-    const v = path ? _get(e, path) : e;
-    _set(o, prp, v);
-    o$.next(o);
-  }
-
   testValue(e: any) {
     console.log('TEST VALUE CHANGED', e);
   }
@@ -78,10 +72,12 @@ export class DialogEditorBase<T> extends EditorBase {
   value$: BehaviorSubject<T>;
 
   protected applyValue: (v: T) => void = (v: T) => {};
+  protected validate: (v: T) => boolean = (v: T) => true;
 
   constructor() {
     super();
     this.value$ = new BehaviorSubject<T>(_clone(this.value));
+    this.invalid$ = this.value$.pipe(map(v => !this.validate(v)));
   }
 
   protected clone(o: any) {
@@ -91,8 +87,15 @@ export class DialogEditorBase<T> extends EditorBase {
     return _extend(target, source);
   }
 
+  protected updateValue(e: any, prp: string, path?: string) {
+    const nv = _clone(this.value$.value);
+    const v = path ? _get(e, path) : e;
+    _set(<any>nv, prp, v);
+    this.value$.next(nv);
+  }
+
   apply() {
-    if (this.applyValue) this.applyValue(_clone(this.value$.value));
+    this.applyValue(_clone(this.value$.value));
     this._dialogRef.close();
   }
 }

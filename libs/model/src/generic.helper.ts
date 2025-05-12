@@ -70,6 +70,8 @@ export const containsCaseInsensitive = (v1: any, v2: any): boolean => {
   return !!v2_str && v1_str.includes(v2_str);
 }
 
+export const isEmptyString = (v?: any): boolean => !`${v||''}`.trim();
+
 /**
  * vero se null, undefined o NaN
  * @param v
@@ -223,6 +225,8 @@ export const scrollToElement = (doc: Document, id: string, position: ScrollLogic
     });
   }
 }
+
+export const isToday = (d: Date): boolean => d.toLocaleDateString() === new Date().toLocaleDateString();
 
 export const getDayNumber = (day: Date): number =>
   (day.getFullYear() * 10000) + ((day.getMonth() + 1) * 100) + day.getDate();

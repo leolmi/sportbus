@@ -1,70 +1,96 @@
-@if (shuttle$|async; as shuttle) {
-  <div class="shuttle-container"
-       [class.temporary]="shuttle._temporary"
-       [ngClass]="'shuttle-direction-'+shuttle.direction"
-       fxLayout="column" fxFlex>
+@if (manager.context$|async; as ctx) {
+  @if (shuttle$|async; as shuttle) {
+    <div class="shuttle-container"
+         [class.temporary]="shuttle._temporary"
+         [class.direction-ok]="isDirectionOk$|async"
+         [ngClass]="'shuttle-direction-'+shuttle.direction"
+         fxLayout="column" fxFlex>
 
-    <div class="shuttle-title" fxLayout="row" fxLayoutAlign="start center">
-      <span fxFlex>{{shuttle.target}} {{shuttle.time|timeToString}}</span>
+
       @if (!shuttle._temporary) {
-        <mat-icon class="as-button" (click)="deleteShuttle()">delete</mat-icon>
+        <div class="shuttle-header" fxLayout="row" fxLayoutAlign="start center">
+          <span fxFlex>{{shuttle.target}} {{shuttle.time|timeToString}}</span>
+<!--          <mat-icon class="shuttle-evidence" [class.inverse]="shuttle.direction==='R'">airport_shuttle</mat-icon>-->
+          <div class="shuttle-evidence" fxLayout="row" fxLayoutAlign="start center">
+            @if(shuttle.direction==='A') {
+              <mat-icon>more_horiz</mat-icon>
+              <mat-icon>airport_shuttle</mat-icon>
+            } @else {
+              <mat-icon class="inverse">airport_shuttle</mat-icon>
+              <mat-icon>more_horiz</mat-icon>
+            }
+          </div>
+          <mat-icon class="as-button" (click)="deleteShuttle()">delete</mat-icon>
+        </div>
       }
-    </div>
 
-    <!-- DRIVER & PASSENGERS -->
-    <div class="shuttle-passengers spb-color-hover">
+      <!-- DRIVER & PASSENGERS -->
+      <div class="shuttle-passengers spb-color-hover"
+           [class.temporary]="shuttle._temporary">
 
-      <!-- DRIVER -->
-      <div class="shuttle-passengers-toolbar line-bottom"
-           fxLayout="row" fxLayoutAlign="start center">
+        <!-- DRIVER -->
+        <div class="shuttle-passengers-toolbar line-bottom"
+             fxLayout="row" fxLayoutAlign="start center">
 
-        <div class="shuttle-driver"
-             fxLayout="row" fxLayoutAlign="start center"
-             [matMenuTriggerFor]="personsMenu"
-             #menuTrigger="matMenuTrigger"
-             (click)="openPersonsMenu(menuTrigger, true)"
-             fxFlex>
-          <mat-icon class="as-button margin-right">sports_motorsports</mat-icon>
-          @if (shuttle.driver) {
-            <span fxFlex>{{shuttle.driver|personName:manager.session}}</span>
-          } @else {
-            <span class="disabled" fxFlex>no driver yet</span>
+          <div class="shuttle-driver"
+               fxLayout="row" fxLayoutAlign="start center"
+               [matMenuTriggerFor]="personsMenu"
+               #menuTrigger="matMenuTrigger"
+               (click)="openPersonsMenu(menuTrigger, true)"
+               fxFlex>
+            <mat-icon class="as-button margin-right">sports_motorsports</mat-icon>
+            @if (shuttle.driver) {
+              <span fxFlex>{{shuttle.driver|personName:ctx}}</span>
+            } @else {
+              <span class="disabled" fxFlex>no driver yet</span>
+            }
+          </div>
+          <mat-icon class="as-button margin-right-2"
+                    [class.disabled]="(shuttle.passengers||[]).length<1"
+                    (click)="editTimes()">schedule</mat-icon>
+          <mat-icon class="as-button"
+                    [class.disabled]="!(hasPassengers$|async)"
+                    [matMenuTriggerFor]="personsMenu"
+                    #menuPassengersTrigger="matMenuTrigger"
+                    (click)="openPersonsMenu(menuPassengersTrigger, false)"
+          >add</mat-icon>
+        </div>
+
+        <!-- PASSENGERS -->
+        <div class="shuttle-passengers-container">
+          @for (psg of shuttle.passengers; track $index) {
+            <div class="shuttle-passenger-row spb-color-hover"
+                 fxLayout="row" fxLayoutAlign="start center">
+              <span fxFlex>{{psg|personName:ctx}}</span>
+              <span class="atl-time margin-right-2">{{psg|passengerTime:shuttle}}</span>
+              <mat-icon class="as-button" (click)="removeShuttlePassenger(psg)">close</mat-icon>
+            </div>
           }
         </div>
-        <mat-icon class="as-button margin-right-2"
-                  [class.disabled]="(shuttle.passengers||[]).length<1"
-                  (click)="editTimes()">schedule</mat-icon>
-        <mat-icon class="as-button"
-                  [matMenuTriggerFor]="personsMenu"
-                  #menuPassengersTrigger="matMenuTrigger"
-                  (click)="openPersonsMenu(menuPassengersTrigger, false)"
-        >add</mat-icon>
-      </div>
 
-      <!-- PASSENGERS -->
-      <div class="shuttle-passengers-container">
-        @for (psg of shuttle.passengers; track $index) {
-          <div class="shuttle-passenger-row spb-color-hover"
-               fxLayout="row" fxLayoutAlign="start center">
-            <span fxFlex>{{psg|personName:manager.session}}</span>
-            <span class="atl-time margin-right-2">{{psg|passengerTime:shuttle}}</span>
-            <mat-icon class="as-button" (click)="removeShuttlePassenger(psg)">close</mat-icon>
-          </div>
-        }
       </div>
-
     </div>
-  </div>
-  <mat-menu #personsMenu="matMenu">
-    @for (prs of menuPersons$|async; track $index) {
-      <button mat-menu-item
-              (click)="addPerson(prs)">
-        <mat-icon>{{prs|personIcon}}</mat-icon>
-        <span class="menu-parson-name">{{prs.name}}</span>
-        @if (!(asDriver$|async)) {
-          <span class="menu-passenger-group">{{prs.group|groupName:manager.session}}</span>
+    <mat-menu #personsMenu="matMenu">
+      @if (menuPersons$|async; as prsList) {
+        @for (prs of prsList; track $index) {
+          <button mat-menu-item
+                  (click)="addPerson(prs)">
+            <mat-icon>{{prs|personIcon}}</mat-icon>
+            <span class="menu-parson-name">{{prs.name}}</span>
+            @if (!(asDriver$|async)) {
+              <span class="menu-passenger-group">{{prs.group|groupName:ctx}}</span>
+            }
+          </button>
         }
-      </button>
-    }
-  </mat-menu>
+        @if (allowAddAll$|async) {
+          <div class="separator"></div>
+          <button mat-menu-item
+                  (click)="addAllPersons(prsList)">
+            <mat-icon>group_add</mat-icon>
+            <span spb-i18n>add all persons</span>
+          </button>
+        }
+      }
+    </mat-menu>
+  }
 }

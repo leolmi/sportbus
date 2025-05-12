@@ -1,11 +1,28 @@
 <div class="calendar">
-  @for (item of manager.dayCalendarItems$|async; track $index) {
+  @if (manager.context$|async; as ctx) {
+    @for (item of manager.dayCalendarItems$|async; track $index) {
+      <div class="calendar-item"
+           fxLayout="row" fxLayoutAlign="start center">
+        <span class="item-group" fxFlex>{{item.group|groupName:ctx}}</span>
+        <span class="item-target" fxFlex>{{item.target}}</span>
+        <span class="item-time item-start">{{item.start|timeToString}}</span>
+        <span class="item-time item-end">{{item.end|timeToString}}</span>
+        @if (item|isSodCalendarItem:ctx) {
+          <mat-icon class="as-button size-20"
+                    [matTooltip]="'modify item'|i18n"
+                    (click)="editSodItem(item)">edit</mat-icon>
+          <mat-icon class="as-button size-20"
+                    [matTooltip]="'remove item'|i18n"
+                    (click)="removeSodItem(item)">cancel</mat-icon>
+        } @else {
+          <mat-icon class="size-20 opacity-4">push_pin</mat-icon>
+        }
+      </div>
+    }
     <div class="calendar-item"
          fxLayout="row" fxLayoutAlign="start center">
-      <span class="item-group" fxFlex>{{item.group|groupName:manager.session}}</span>
-      <span class="item-target" fxFlex>{{item.target}}</span>
-      <span class="item-time item-start">{{item.start|timeToString}}</span>
-      <span class="item-time item-end">{{item.end|timeToString}}</span>
+      <span class="item-new" fxFlex spb-i18n>new item</span>
+      <mat-icon class="as-button size-20" (click)="addSodItem()">add_circle</mat-icon>
     </div>
   }
 </div>

@@ -1,4 +1,4 @@
-import { ButtonsStatus, Dictionary, LastUpdate } from './lib';
+import { ButtonsStatus, CalendarItem, Dictionary, LastUpdate, Person, SessionContext } from './lib';
 import { cloneDeep as _clone, forOwn as _forOwn } from 'lodash';
 import { BehaviorSubject } from 'rxjs';
 
@@ -11,6 +11,8 @@ export const isRightCode = (code?: string): boolean =>
 
 
 export const sanitizeCode = (v: string): string => `${v||''}`.toUpperCase();
+
+export const isEmptyContext = (context: SessionContext): boolean => !context.ses || !context.sod;
 
 /**
  * integra i valori passati senza alterare gli esistenti
@@ -40,3 +42,6 @@ export const updateIfLuChanged = <T extends LastUpdate>(o$: BehaviorSubject<T|un
   if (getLu(o1) !== getLu(o2) && (!changed || changed(o1, o2))) o$.next(no);
 }
 
+export const isEmptyCalendarItem = (ci?: CalendarItem): boolean => !ci?.start || !ci?.end || !ci?.target;
+
+export const isEmptyPerson = (p?: Person): boolean => !p?.name || !p.code;

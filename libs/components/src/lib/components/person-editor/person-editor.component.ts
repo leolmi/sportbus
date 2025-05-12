@@ -10,6 +10,7 @@ import { Person } from '@olmi/model';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSelectModule } from '@angular/material/select';
+import { map } from 'rxjs';
 
 @Component({
   selector: 'person-editor',
@@ -32,5 +33,6 @@ import { MatSelectModule } from '@angular/material/select';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PersonEditorComponent extends DialogEditorBase<Person> {
+  override validate = (p: Person) => !!p.name;
   override applyValue = (p: Person) => this.manager.updatePerson(p);
 }

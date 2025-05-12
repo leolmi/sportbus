@@ -5,11 +5,11 @@
       <!-- name -->
       <input [value]="prs.name||''"
              class="spb-basic-input big-input full-width margin-bottom-2"
-             (input)="updateValue$(value$, $event, 'name','target.value')">
+             (input)="updateValue($event, 'name','target.value')">
       <!-- isDriver -->
       <mat-checkbox class="example-margin spb-editor-control"
                     [checked]="prs.isDriver"
-                    (change)="updateValue$(value$, $event, 'isDriver','checked')">{{'is driver'|i18n}}</mat-checkbox>
+                    (change)="updateValue($event, 'isDriver','checked')">{{'is driver'|i18n}}</mat-checkbox>
       <!-- group -->
       <mat-form-field class="spb-editor-control">
         <mat-label spb-i18n>Group</mat-label>
@@ -26,6 +26,8 @@
 </div>
 <mat-dialog-actions>
   <div fxFlex></div>
-  <button mat-flat-button (click)="apply()" spb-i18n>Ok</button>
+  <button mat-flat-button
+          [disabled]="invalid$|async"
+          (click)="apply()" spb-i18n>Ok</button>
   <button mat-button mat-dialog-close spb-i18n>Cancel</button>
 </mat-dialog-actions>

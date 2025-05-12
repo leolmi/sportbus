@@ -7,7 +7,7 @@ import { Dictionary, ShuttleDirection } from './types';
 export class Shuttle {
   constructor(s?: Partial<Shuttle>) {
     this.code = s?.code || '';
-    this.direction = s?.direction || 'A';
+    this.direction = s?.direction || directionByCode(this.code) || 'A';
     this.time = s?.time || 0;
     this.target = s?.target || '';
     this.driver = s?.driver || '';
@@ -50,3 +50,4 @@ export class Shuttle {
   _temporary?: boolean;
 }
 
+const directionByCode = (code: string): ShuttleDirection => <ShuttleDirection>`${code||''}`.charAt(0);

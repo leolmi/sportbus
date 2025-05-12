@@ -1,0 +1,37 @@
+.session-footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  left: 0;
+  box-sizing: border-box;
+  padding: var(--spb-padding) var(--spb-padding) 0;
+  z-index: 10;
+  background-color: var(--spb-color-background);
+}
+
+.chat-input-container {
+  box-sizing: border-box;
+  padding: var(--spb-padding);
+  //position: absolute;
+  top: calc(.5 * var(--spb-padding));
+  width: 100%;
+  left: 0;
+
+  .input-container {
+    position: relative;
+
+    .button-send-container {
+      position: absolute;
+      height: 100%;
+      top: 0;
+      right: calc(2 * var(--spb-padding));
+      pointer-events: none;
+
+      .send-button {
+        &:not([disabled]) {
+          pointer-events: auto;
+        }
+      }
+    }
+  }
+}

@@ -1,85 +1,39 @@
+:host {
+  min-height: 100%;
 
-.empty-container,
-.empty-content {
+  .page-editor {
+    position: relative;
+    overflow: auto;
+    margin-bottom: var(--spb-footer-size);
+
+    .page-editor-content {
+      box-sizing: border-box;
+      padding: calc(var(--spb-padding) * 2);
+      min-height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+    }
+  }
+}
+
+.empty-container {
   text-align: center;
   opacity: .4;
   margin-top: 20vh;
+  padding: 0 80px;
 }
 
-.persons-list {
-  box-sizing: border-box;
-  margin-bottom: var(--spb-padding);
-  text-align: center;
-
-  .person-selector,
-  .passenger-add {
-    border: var(--spb-color-border) 1px dashed;
-    border-radius: var(--spb-padding);
-    width: fit-content;
-    display: inline-block !important;
-    margin: var(--spb-padding);
-    padding: var(--spb-padding);
-    cursor: pointer;
-    position: relative;
-  }
-
-  .passenger-add {
-
-  }
-
-  .person-selector {
-
-    &.ready {
-      background-color: var(--spb-color-success);
-      color: var(--spb-color-success-contrast);
-    }
-    &.present {
-      background-color: var(--spb-color-warning);
-      color: var(--spb-color-warning-contrast);
-    }
-    &.absent {
-      background-color: var(--spb-color-error);
-      color: var(--spb-color-error-contrast);
-    }
-    &.unknown {
-      background-color: var(--spb-color-ghost);
-    }
-
-    .text {
-      float: left;
-      margin-top: 3px;
-      margin-right: var(--spb-padding);
-      user-select: none;
-    }
-    .passenger-group {
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      font-size: .6em;
-      padding-bottom: 4px;
-      opacity: .8;
-    }
-
-    .passenger-active-directions {
-      min-width: 24px;
-      min-height: 24px;
-    }
-  }
+.add-always {
+  padding: calc(4 * var(--spb-padding));
 }
 
-.shuttle-column-header {
-  user-select: none;
-  margin-top: var(--spb-padding);
+.page-editor-container {
+  min-height: 100%;
+}
 
-  .direction {
-    font-weight: bold;
-    font-size: 2em;
-    text-align: center;
-    color: var(--spb-color-error);
-    text-transform: capitalize;
-
-    &.ready {
-      color: var(--spb-color-success);
-    }
-  }
+.chat-container {
+  position: relative;
+  min-height: 300px;
 }

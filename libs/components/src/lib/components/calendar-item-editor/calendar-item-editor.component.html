@@ -8,6 +8,12 @@
              class="spb-basic-input big-input full-width margin-bottom-2"
              (input)="updateValue($event, 'target','target.value')">
 
+      <!-- group -->
+      <mat-label class="capitalize" spb-i18n>Group</mat-label>
+      <input [value]="citem.group||''"
+             class="spb-basic-input big-input full-width margin-bottom-2"
+             (input)="updateValue($event, 'group','target.value')">
+
       <div class="day-editor-times margin-bottom-2" fxLayout="row" fxLayoutAlign="start center">
         <div class="spb-editor-container">
           <!-- start -->
